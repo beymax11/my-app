@@ -4,11 +4,14 @@ export interface CartItem {
   variantId?: string;
   name: string;
   price: number;
+  originalPrice?: number;
   image: string;
   quantity: number;
   size?: string;
   color?: string;
   material?: string;
+  isSale?: boolean;
+  isNew?: boolean;
 }
 
 export interface Cart {

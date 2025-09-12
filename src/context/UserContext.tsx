@@ -46,22 +46,43 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      // This would typically be an API call
-      // For now, we'll simulate with mock data
-      const mockUser: User = {
-        id: '1',
-        email,
-        firstName: 'John',
-        lastName: 'Doe',
-        phone: '+63 912 345 6789',
-        role: 'customer',
-        isEmailVerified: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
+      // Check if user exists in localStorage (from registration)
+      const existingUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+      const foundUser = existingUsers.find((user: any) => user.email === email);
+      
+      if (foundUser) {
+        // Use the actual registered user data
+        const userData: User = {
+          id: foundUser.id,
+          email: foundUser.email,
+          firstName: foundUser.firstName,
+          lastName: foundUser.lastName,
+          phone: foundUser.phone,
+          role: 'customer',
+          isEmailVerified: true,
+          createdAt: foundUser.createdAt ? new Date(foundUser.createdAt) : new Date(),
+          updatedAt: new Date(),
+        };
 
-      setUser(mockUser);
-      localStorage.setItem('user', JSON.stringify(mockUser));
+        setUser(userData);
+        localStorage.setItem('user', JSON.stringify(userData));
+      } else {
+        // Fallback to mock data if user not found (for demo purposes)
+        const mockUser: User = {
+          id: '1',
+          email,
+          firstName: 'John',
+          lastName: 'Doe',
+          phone: '+63 912 345 6789',
+          role: 'customer',
+          isEmailVerified: true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+
+        setUser(mockUser);
+        localStorage.setItem('user', JSON.stringify(mockUser));
+      }
     } catch (error) {
       console.error('Login error:', error);
       throw error;
@@ -91,6 +112,23 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
+
+      // Store registered users in a separate array for login lookup
+      const existingUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+      const userExists = existingUsers.some((user: any) => user.email === userData.email);
+      
+      if (!userExists) {
+        existingUsers.push({
+          id: newUser.id,
+          email: newUser.email,
+          firstName: newUser.firstName,
+          lastName: newUser.lastName,
+          phone: newUser.phone,
+          password: userData.password, // Store password for demo (in real app, this would be hashed)
+          createdAt: newUser.createdAt.toISOString(),
+        });
+        localStorage.setItem('registeredUsers', JSON.stringify(existingUsers));
+      }
 
       setUser(newUser);
       localStorage.setItem('user', JSON.stringify(newUser));

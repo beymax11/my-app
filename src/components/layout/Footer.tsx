@@ -1,66 +1,582 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Icon } from '@iconify/react';
 import Link from 'next/link';
+import Slider from 'react-slick';
+import type { Settings } from 'react-slick';
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
-export const Footer: React.FC = () => {
+
+const Footer: React.FC = () => {
+  const [isLanguageOpen, setIsLanguageOpen] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState('English');
+  const [showCookieModal, setShowCookieModal] = useState(false);
+
+  // State for mobile dropdowns
+  const [isCompanyOpen, setIsCompanyOpen] = useState(false);
+  const [isMoreInfoOpen, setIsMoreInfoOpen] = useState(false);
+  const [isLocationOpen, setIsLocationOpen] = useState(false);
+  const [isBranchesOpen, setIsBranchesOpen] = useState(false);
+
+  // State for cookie category expansion
+  const [isPerformanceExpanded, setIsPerformanceExpanded] = useState(false);
+  const [isFunctionalExpanded, setIsFunctionalExpanded] = useState(false);
+  const [isTargetingExpanded, setIsTargetingExpanded] = useState(false);
+
+  // State for cookie toggle status
+  const [isPerformanceEnabled, setIsPerformanceEnabled] = useState(true); // Assuming enabled by default based on image
+  const [isFunctionalEnabled, setIsFunctionalEnabled] = useState(true); // Assuming enabled by default
+  const [isTargetingEnabled, setIsTargetingEnabled] = useState(true); // Assuming enabled by default
+
+  const languages = [
+    { code: 'en', name: 'English' },
+    { code: 'fil', name: 'Filipino' },
+    { code: 'ja', name: '日本語' },
+    { code: 'ko', name: '한국어' }
+  ];
+
+  const handleLanguageSelect = (language: string) => {
+    setSelectedLanguage(language);
+    setIsLanguageOpen(false);
+  };
+
+  const handleCookieSettingsClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setShowCookieModal(true);
+  };
+
+  const handleCloseCookieModal = () => {
+    setShowCookieModal(false);
+  };
+
+  // Handlers for expanding/collapsing cookie categories
+  const togglePerformanceExpanded = () => setIsPerformanceExpanded(!isPerformanceExpanded);
+  const toggleFunctionalExpanded = () => setIsFunctionalExpanded(!isFunctionalExpanded);
+  const toggleTargetingExpanded = () => setIsTargetingExpanded(!isTargetingExpanded);
+
+  // Handlers for toggling cookie status
+  const togglePerformanceEnabled = () => setIsPerformanceEnabled(!isPerformanceEnabled);
+  const toggleFunctionalEnabled = () => setIsFunctionalEnabled(!isFunctionalEnabled);
+  const toggleTargetingEnabled = () => setIsTargetingEnabled(!isTargetingEnabled);
+
+  const handleOnlyNecessaryClick = () => {
+    // Logic for only necessary cookies
+    console.log('Only Necessary Cookies clicked');
+    handleCloseCookieModal();
+  };
+
+  const handleConfirmChoicesClick = () => {
+    // Logic for confirming choices
+    console.log('Confirm My Choices clicked');
+    console.log('Performance Cookies Enabled:', isPerformanceEnabled);
+    console.log('Functional Cookies Enabled:', isFunctionalEnabled);
+    console.log('Targeting Cookies Enabled:', isTargetingEnabled);
+    handleCloseCookieModal();
+  };
+
+  const sliderSettings: Settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    arrows: false,
+    autoplay: true,
+    autoplaySpeed: 3000,
+  };
+
   return (
-    <footer className="bg-gray-900 text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Company Info */}
-          <div className="col-span-1 md:col-span-2">
-            <h3 className="text-2xl font-bold mb-4">E-Commerce</h3>
-            <p className="text-gray-400 mb-4">
-              Your one-stop shop for quality products at great prices. 
-              We're committed to providing excellent customer service and fast delivery.
-            </p>
-            <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-white">
-                <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
-                </svg>
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white">
-                <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/>
-                </svg>
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white">
-                <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.746-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24.009 12.017 24.009c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641.001.012.001z"/>
-                </svg>
-              </a>
+    <>
+      {/* Featured Section */}
+      <div className="bg-white py-8 md:py-12 mt-8 md:mt-12 border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Mobile Slider */}
+          <div className="block md:hidden">
+            {/* @ts-ignore */}
+            <Slider {...sliderSettings}>
+              {/* Free Delivery & Installation */}
+              <div className="px-2">
+                <div className="flex flex-col items-center text-center">
+                  <Icon icon="mdi:truck-delivery-outline" width="28" height="28" className="text-black mb-3" />
+                  <div>
+                    <h3 className="font-semibold text-base md:text-lg mb-1 md:mb-2 text-black">Free delivery & installation</h3>
+                    <p className="text-sm md:text-base text-gray-600">For orders P10,000.00 and above within Metro Manila.</p>
+                  </div>
+                </div>
+              </div>
+          
+              {/* Phone Contact */}
+              <div className="px-2">
+                <div className="flex flex-col items-center text-center">
+                  <Icon icon="mdi:phone-outline" width="28" height="28" className="text-black mb-3" />
+                  <div>
+                    <h3 className="font-semibold text-base md:text-lg mb-1 md:mb-2 text-black">Phone Contact</h3>
+                    <p className="text-sm md:text-base text-gray-600">Monday to Sunday 9:00am - 5:00pm</p>
+                  </div>
+                </div>
+              </div>
+          
+              {/* Top-notch support */}
+              <div className="px-2">
+                <div className="flex flex-col items-center text-center">
+                  <Icon icon="mdi:headset" width="28" height="28" className="text-black mb-3" />
+                  <div>
+                    <h3 className="font-semibold text-base md:text-lg mb-1 md:mb-2 text-black">Top-notch support</h3>
+                    <p className="text-sm md:text-base text-gray-600">Any question? Our team is just one click away!</p>
+                  </div>
+                </div>
+              </div>
+          
+              {/* Secure payments */}
+              <div className="px-2">
+                <div className="flex flex-col items-center text-center">
+                  <Icon icon="mdi:lock-outline" width="28" height="28" className="text-black mb-3" />
+                  <div>
+                    <h3 className="font-semibold text-base md:text-lg mb-1 md:mb-2 text-black">Secure payments</h3>
+                    <p className="text-sm md:text-base text-gray-600">Your payment information is processed securely</p>
+                  </div>
+                </div>
+              </div>
+            </Slider>
+          </div>
+
+          {/* Desktop Grid */}
+          <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+            {/* Free Delivery & Installation */}
+            <div className="flex items-start">
+              <Icon icon="mdi:truck-delivery-outline" width="28" height="28" className="text-black mr-3 md:mr-4 mt-1 flex-shrink-0" />
+              <div>
+                <h3 className="font-semibold text-base md:text-lg mb-1 md:mb-2 text-black">Free delivery & installation</h3>
+                <p className="text-sm md:text-base text-gray-600">For orders P10,000.00 and above within Metro Manila.</p>
+              </div>
+            </div>
+        
+            {/* Phone Contact */}
+            <div className="flex items-start">
+              <Icon icon="mdi:phone-outline" width="28" height="28" className="text-black mr-3 md:mr-4 mt-1 flex-shrink-0" />
+              <div>
+                <h3 className="font-semibold text-base md:text-lg mb-1 md:mb-2 text-black">Phone Contact</h3>
+                <p className="text-sm md:text-base text-gray-600">Monday to Sunday 8:00am - 7:00pm</p>
+              </div>
+            </div>
+        
+            {/* Top-notch support */}
+            <div className="flex items-start">
+              <Icon icon="mdi:headset" width="28" height="28" className="text-black mr-3 md:mr-4 mt-1 flex-shrink-0" />
+              <div>
+                <h3 className="font-semibold text-base md:text-lg mb-1 md:mb-2 text-black">Top-notch support</h3>
+                <p className="text-sm md:text-base text-gray-600">Any question? Our team is just one click away!</p>
+              </div>
+            </div>
+        
+            {/* Secure payments */}
+            <div className="flex items-start">
+              <Icon icon="mdi:lock-outline" width="28" height="28" className="text-black mr-3 md:mr-4 mt-1 flex-shrink-0" />
+              <div>
+                <h3 className="font-semibold text-base md:text-lg mb-1 md:mb-2 text-black">Secure payments</h3>
+                <p className="text-sm md:text-base text-gray-600">Your payment information is processed securely</p>
+              </div>
             </div>
           </div>
-          
-          {/* Quick Links */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
-            <ul className="space-y-2">
-              <li><Link href="/about" className="text-gray-400 hover:text-white">About Us</Link></li>
-              <li><Link href="/contact" className="text-gray-400 hover:text-white">Contact</Link></li>
-              <li><Link href="/faq" className="text-gray-400 hover:text-white">FAQ</Link></li>
-              <li><Link href="/shipping" className="text-gray-400 hover:text-white">Shipping Info</Link></li>
-              <li><Link href="/returns" className="text-gray-400 hover:text-white">Returns</Link></li>
-            </ul>
-          </div>
-          
-          {/* Customer Service */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4">Customer Service</h4>
-            <ul className="space-y-2">
-              <li><Link href="/support" className="text-gray-400 hover:text-white">Support</Link></li>
-              <li><Link href="/track-order" className="text-gray-400 hover:text-white">Track Order</Link></li>
-              <li><Link href="/size-guide" className="text-gray-400 hover:text-white">Size Guide</Link></li>
-              <li><Link href="/privacy" className="text-gray-400 hover:text-white">Privacy Policy</Link></li>
-              <li><Link href="/terms" className="text-gray-400 hover:text-white">Terms of Service</Link></li>
-            </ul>
-          </div>
-        </div>
-        
-        <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; 2024 E-Commerce. All rights reserved.</p>
         </div>
       </div>
-    </footer>
+    
+      {/* Footer */}
+      <footer className="bg-gray-50 text-black py-12 md:py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 md:gap-12 lg:gap-24">
+            {/* IZAJ Family */}
+            <div className="lg:col-span-1">
+              <h3 className="font-bold text-xl md:text-2xl mb-3 md:mb-4">IZAJ Family</h3>
+              <p className="text-sm md:text-base text-gray-700 mb-4 md:mb-6 max-w-xs">Unlock exclusive deals and special offers just for you! Subscribe now and be the first to know about flash sales, discounts, and new arrivals!</p>
+              <Link href="/subscribe" className="bg-black text-white text-sm md:text-base font-semibold rounded-full px-6 md:px-8 py-2 md:py-3 hover:bg-gray-800 transition-colors inline-block">Join for free</Link>
+            </div>
+
+            {/* Our Company - Mobile Dropdown */}
+            <div>
+              <button 
+                onClick={() => setIsCompanyOpen(!isCompanyOpen)}
+                className="flex items-center justify-between w-full md:hidden"
+              >
+                <h3 className="font-bold text-lg md:text-xl tracking-tight">OUR COMPANY</h3>
+                <Icon 
+                  icon={isCompanyOpen ? "mdi:chevron-up" : "mdi:chevron-down"} 
+                  width="24" 
+                  height="24" 
+                  className="text-gray-700"
+                />
+              </button>
+              <h3 className="font-bold text-lg md:text-xl mb-3 md:mb-4 tracking-tight hidden md:block">OUR COMPANY</h3>
+              <ul className={`space-y-2 md:space-y-3 ${isCompanyOpen ? 'block' : 'hidden'} md:block`}>
+                <li><a href="/" className="hover:text-orange-500 transition-colors text-sm md:text-base text-gray-700">Home</a></li>
+                <li><a href="/aboutus" className="hover:text-orange-500 transition-colors text-sm md:text-base text-gray-700">About Us</a></li>
+                <li><a href="/contactus" className="hover:text-orange-500 transition-colors text-sm md:text-base text-gray-700">Contact Us</a></li>
+              </ul>
+            </div>
+
+            {/* More Info - Mobile Dropdown */}
+            <div>
+              <button 
+                onClick={() => setIsMoreInfoOpen(!isMoreInfoOpen)}
+                className="flex items-center justify-between w-full md:hidden"
+              >
+                <h3 className="font-bold text-lg md:text-xl tracking-tight">MORE INFO</h3>
+                <Icon 
+                  icon={isMoreInfoOpen ? "mdi:chevron-up" : "mdi:chevron-down"} 
+                  width="24" 
+                  height="24" 
+                  className="text-gray-700"
+                />
+              </button>
+              <h3 className="font-bold text-lg md:text-xl mb-3 md:mb-4 tracking-tight hidden md:block">MORE INFO</h3>
+              <ul className={`space-y-2 md:space-y-3 ${isMoreInfoOpen ? 'block' : 'hidden'} md:block`}>
+                <li><a href="/delivery" className="hover:text-orange-500 transition-colors text-sm md:text-base text-gray-700">Delivery & Installation</a></li>
+                <li><a href="/privacypolicy" className="hover:text-orange-500 transition-colors text-sm md:text-base text-gray-700">Privacy Policy</a></li>
+                <li><a href="/return" className="hover:text-orange-500 transition-colors text-sm md:text-base text-gray-700">Returns & Refunds</a></li>
+                <li><a href="/help" className="hover:text-orange-500 transition-colors text-sm md:text-base text-gray-700">Help & FAQs</a></li>
+                <li><a href="/term" className="hover:text-orange-500 transition-colors text-sm md:text-base text-gray-700">Terms & Conditions</a></li>
+                <li><a href="/warranty" className="hover:text-orange-500 transition-colors text-sm md:text-base text-gray-700">Warranty Terms</a></li>
+                <li><a href="/career" className="hover:text-orange-500 transition-colors text-sm md:text-base text-gray-700">Careers</a></li>
+              </ul>
+            </div>
+
+            {/* Connect With Us - Mobile Dropdown */}
+            <div>
+              <button 
+                onClick={() => setIsLocationOpen(!isLocationOpen)}
+                className="flex items-center justify-between w-full md:hidden"
+              >
+                <span className="font-bold text-lg md:text-xl tracking-tight whitespace-nowrap">CONNECT WITH US</span>
+                <Icon 
+                  icon={isLocationOpen ? "mdi:chevron-up" : "mdi:chevron-down"} 
+                  width="24" 
+                  height="24" 
+                  className="text-gray-700"
+                />
+              </button>
+                <span className="font-bold text-lg md:text-xl mb-3 md:mb-4 tracking-tight hidden md:block whitespace-nowrap">CONNECT WITH US</span>
+                <ul className={`space-y-2 md:space-y-3 ${isLocationOpen ? 'block' : 'hidden'} md:block`}>
+                <li>
+                  <a href="mailto:izajtrading@gmail.com" className="hover:text-orange-500 transition-colors text-sm md:text-base text-gray-700 flex items-center gap-2">
+                  <span className="flex items-center">
+                    <Icon icon="mdi:email-outline" width={18} height={18} className="inline-block align-middle !text-gray-700" />
+                    <span className="inline-block align-middle ml-1">izajtrading@gmail.com</span>
+                  </span>
+                  </a>
+                </li>
+                <li>
+                  <a href="tel:+639123456789" className="hover:text-orange-500 transition-colors text-sm md:text-base text-gray-700 flex items-center gap-2">
+                  <Icon icon="mdi:cellphone" width="18" height="18" /> +63 9423633442
+                  </a>
+                </li>
+                <li>
+                  <a href="tel:+63491234567" className="hover:text-orange-500 transition-colors text-sm md:text-base text-gray-700 flex items-center gap-2">
+                  <Icon icon="mdi:phone" width="18" height="18" /> (049) 123 4567
+                  </a>
+                </li>
+                <li>
+                  <a href="https://facebook.com/izajlighting" target="_blank" rel="noopener noreferrer" className="hover:text-orange-500 transition-colors text-sm md:text-base text-gray-700 flex items-center gap-2">
+                  <Icon icon="mdi:facebook" width="18" height="18" className="text-[#1877F3]" /> Izaj Lighting Centre
+                  </a>
+                </li>
+                </ul>
+            </div>
+
+            {/* Our Branches - Mobile Dropdown */}
+            <div>
+              <button 
+                onClick={() => setIsBranchesOpen(!isBranchesOpen)}
+                className="flex items-center justify-between w-full md:hidden"
+              >
+                <h3 className="font-bold text-lg md:text-xl tracking-tight">OUR BRANCHES</h3>
+                <Icon 
+                  icon={isBranchesOpen ? "mdi:chevron-up" : "mdi:chevron-down"} 
+                  width="24" 
+                  height="24" 
+                  className="text-gray-700"
+                />
+              </button>
+              <h3 className="font-bold text-lg md:text-xl mb-3 md:mb-4 tracking-tight hidden md:block">OUR BRANCHES</h3>
+              <ul className={`space-y-1 md:space-y-2 text-gray-500 text-sm md:text-base ${isBranchesOpen ? 'block' : 'hidden'} md:block`}>
+                <li>
+                  <BranchDropdown name="San Pablo City">
+                    <span className="block px-4 py-2 text-gray-700 text-xs md:text-sm">173 1, San Pablo City, 4000 Laguna</span>
+                  </BranchDropdown>
+                </li>
+                <li>
+                  <BranchDropdown name="Quezon">
+                    <span className="block px-4 py-2 text-gray-700 text-xs md:text-sm">Lucena, Quezon Province</span>
+                  </BranchDropdown>
+                </li>
+                <li>
+                  <BranchDropdown name="Laguna">
+                    <span className="block px-4 py-2 text-gray-700 text-xs md:text-sm">Sta. Cruz, Laguna</span>
+                  </BranchDropdown>
+                </li>
+                <li>
+                  <BranchDropdown name="Cavite">
+                    <span className="block px-4 py-2 text-gray-700 text-xs md:text-sm">Silang, Cavite</span>
+                  </BranchDropdown>
+                </li>
+                <li>
+                  <BranchDropdown name="Batangas">
+                    <span className="block px-4 py-2 text-gray-700 text-xs md:text-sm">Lipa, Batangas</span>
+                  </BranchDropdown>
+                </li>
+                <li>
+                  <BranchDropdown name="Camarines Sur">
+                    <span className="block px-4 py-2 text-gray-700 text-xs md:text-sm">Naga City, Camarines Sur</span>
+                  </BranchDropdown>
+                </li>
+                <li>
+                  <BranchDropdown name="Sorsogon">
+                    <span className="block px-4 py-2 text-gray-700 text-xs md:text-sm">Sorsogon City, Sorsogon</span>
+                  </BranchDropdown>
+                </li>
+                <li>
+                  <BranchDropdown name="La Union">
+                    <span className="block px-4 py-2 text-gray-700 text-xs md:text-sm">Bauang, La Union</span>
+                  </BranchDropdown>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Social and Payment Icons Bar */}
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-0 mt-12 md:mt-16">
+            <div className="flex flex-col md:flex-row items-center gap-6">
+              {/* Social Icons */}
+              <div className="flex gap-3 md:gap-4">
+                <a href="#" className="rounded-full border border-gray-200 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center hover:bg-gray-100 transition-colors">
+                  <Icon icon="mdi:facebook" width="20" height="20" className="md:w-6 md:h-6 text-gray-700" />
+                </a>
+                <a href="#" className="rounded-full border border-gray-200 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center hover:bg-gray-100 transition-colors">
+                  <Icon icon="mdi:youtube" width="20" height="20" className="md:w-6 md:h-6 text-gray-700" />
+                </a>
+                <a href="#" className="rounded-full border border-gray-200 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center hover:bg-gray-100 transition-colors">
+                  <Icon icon="mdi:instagram" width="20" height="20" className="md:w-6 md:h-6 text-gray-700" />
+                </a>
+                <a href="#" className="rounded-full border border-gray-200 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center hover:bg-gray-100 transition-colors">
+                  <Icon icon="mdi:pinterest" width="20" height="20" className="md:w-6 md:h-6 text-gray-700" />
+                </a>
+                <a href="#" className="rounded-full border border-gray-200 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center hover:bg-gray-100 transition-colors">
+                  <Icon icon="ri:tiktok-fill" width="20" height="20" className="md:w-6 md:h-6 text-gray-700" />
+                </a>
+              </div>
+
+              {/* Payment Icons */}
+              <div className="flex gap-3 md:gap-4">
+                <div className="rounded-lg border border-gray-200 bg-white w-14 h-10 md:w-16 md:h-12 flex items-center justify-center">
+                  <img src="/gcash2.png" alt="GCash" className="h-5 md:h-6" />
+                </div>
+                <div className="rounded-lg border border-gray-200 bg-white w-14 h-10 md:w-16 md:h-12 flex items-center justify-center">
+                  <img src="/maya2.png" alt="Maya" className="h-6 md:h-8 w-auto object-contain" />
+                </div>
+                <div className="rounded-lg border border-gray-200 bg-white w-14 h-10 md:w-16 md:h-12 flex items-center justify-center">
+                  <img src="/paypal2.png" alt="PayPal" className="h-5 md:h-6" />
+                </div>
+              </div>
+            </div>
+
+            {/* Language Selector */}
+            <div className="relative">
+              <button 
+                onClick={() => setIsLanguageOpen(!isLanguageOpen)}
+                className="flex items-center gap-2 px-3 md:px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+              >
+                <Icon icon="mdi:translate" width="18" height="18" className="md:w-5 md:h-5 text-gray-700" />
+                <span className="text-sm md:text-base text-gray-700">{selectedLanguage}</span>
+                <Icon 
+                  icon="mdi:chevron-down" 
+                  width="18" 
+                  height="18" 
+                  className={`md:w-5 md:h-5 text-gray-700 transition-transform ${isLanguageOpen ? 'rotate-180' : ''}`} 
+                />
+              </button>
+              {isLanguageOpen && (
+                <div className="absolute right-0 mt-2 w-40 md:w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                  <div className="py-1">
+                    {languages.map((language) => (
+                      <button
+                        key={language.code}
+                        onClick={() => handleLanguageSelect(language.name)}
+                        className={`block w-full text-left px-3 md:px-4 py-2 text-sm md:text-base text-gray-700 hover:bg-gray-100 ${
+                          selectedLanguage === language.name ? 'bg-gray-50 font-medium' : ''
+                        }`}
+                      >
+                        {language.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Divider Line */}
+          <hr className="my-6 border-gray-200" />
+
+          {/* Bottom Footer Info */}
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-2">
+            <div className="text-gray-700 text-xs md:text-sm">
+              © Izaj Lighting Centre 2024
+              <br />
+              IZAJ (PHILIPPINES), INC. (Registration No. 123456789)
+            </div>
+            <div className="flex flex-wrap gap-4 md:gap-6 text-gray-700 text-xs md:text-sm">
+              <a href="/cookiepolicy" className="hover:underline">Cookie policy</a>
+              <a href="#" className="hover:underline" onClick={handleCookieSettingsClick}>Cookie settings</a>
+              <a href="/termofuse" className="hover:underline">Terms of use</a>
+              <a href="/termsofpurchase" className="hover:underline">Terms of purchase</a>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+      {/* Cookie Settings Modal */}
+      {showCookieModal && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 z-50 flex justify-start">
+          <div className={`relative w-full md:w-96 lg:w-[1200px] bg-white h-full shadow-xl transform transition-transform ease-in-out duration-300 ${showCookieModal ? 'translate-x-0' : '-translate-x-full'} overflow-y-auto`}>
+            {/* Close Button */}
+            <button onClick={handleCloseCookieModal} className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100">
+              <Icon icon="mdi:close" width="24" height="24" className="text-gray-700" />
+            </button>
+
+            <div className="p-4 md:p-6 mt-8">
+              <h2 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">Cookie Preferences</h2>
+              <p className="text-gray-600 text-xs md:text-sm mb-4 md:mb-6">
+                When you visit any website, it may store or retrieve information
+                on your browser, mostly in the form of cookies. This information
+                might be about you, your preferences or your device and is
+                mostly used to make the site work as you expect it to. The
+                information does not usually directly identify you, but it can give
+                you a more personalised web experience. Because we respect
+                your right to privacy, you can choose not to allow some types of
+                cookies. Click on the different category headings to find out
+                more and change our default settings. However, blocking some
+                types of cookies may impact your experience of the site and the
+                services we are able to offer.
+              </p>
+              <a href="#" className="text-blue-600 hover:underline text-xs md:text-sm">More information</a>
+
+              <h3 className="font-bold text-lg md:text-xl mb-3 md:mb-4 mt-6 md:mt-8">Manage Cookie Settings</h3>
+
+              {/* Cookie Categories */}
+              <div className="space-y-2 md:space-y-4">
+                {/* Strictly Necessary Cookies */}
+                <div className="border-t border-gray-200 py-3 md:py-4 flex items-center justify-between">
+                  <div className="flex items-center gap-2 cursor-pointer">
+                    <Icon icon="mdi:plus" width="18" height="18" className="md:w-5 md:h-5 text-gray-700" />
+                    <span className="font-semibold text-sm md:text-base">Strictly Necessary Cookies</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-blue-600 font-semibold text-xs md:text-sm">
+                    <Icon icon="mdi:check-circle" width="18" height="18" className="md:w-5 md:h-5 text-blue-600" />
+                    Always Active
+                  </div>
+                </div>
+
+                {/* Performance Cookies */}
+                <div className="border-t border-gray-200">
+                  <div className="py-3 md:py-4 flex items-center justify-between cursor-pointer" onClick={togglePerformanceExpanded}>
+                    <div className="flex items-center gap-2">
+                      <Icon icon={isPerformanceExpanded ? "mdi:minus" : "mdi:plus"} width="18" height="18" className="md:w-5 md:h-5 text-gray-700" />
+                      <span className="font-semibold text-sm md:text-base">Performance Cookies</span>
+                    </div>
+                    <button onClick={(e) => { e.stopPropagation(); togglePerformanceEnabled(); }}>
+                      <Icon icon={isPerformanceEnabled ? "mdi:toggle-right" : "mdi:toggle-left"} width="36" height="20" className={isPerformanceEnabled ? "text-blue-600" : "text-gray-400"} />
+                    </button>
+                  </div>
+                  {isPerformanceExpanded && (
+                    <div className="pb-3 md:pb-4 text-gray-600 text-xs md:text-sm">
+                      <p>Performance cookies are used to collect information about how visitors use the website.</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Functional Cookies */}
+                <div className="border-t border-gray-200">
+                  <div className="py-3 md:py-4 flex items-center justify-between cursor-pointer" onClick={toggleFunctionalExpanded}>
+                    <div className="flex items-center gap-2">
+                      <Icon icon={isFunctionalExpanded ? "mdi:minus" : "mdi:plus"} width="18" height="18" className="md:w-5 md:h-5 text-gray-700" />
+                      <span className="font-semibold text-sm md:text-base">Functional Cookies</span>
+                    </div>
+                    <button onClick={(e) => { e.stopPropagation(); toggleFunctionalEnabled(); }}>
+                      <Icon icon={isFunctionalEnabled ? "mdi:toggle-right" : "mdi:toggle-left"} width="36" height="20" className={isFunctionalEnabled ? "text-blue-600" : "text-gray-400"} />
+                    </button>
+                  </div>
+                  {isFunctionalExpanded && (
+                    <div className="pb-3 md:pb-4 text-gray-600 text-xs md:text-sm">
+                      <p>Functional cookies allow the website to remember choices you make and provide enhanced, more personal features.</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Targeting Cookies */}
+                <div className="border-t border-b border-gray-200">
+                  <div className="py-3 md:py-4 flex items-center justify-between cursor-pointer" onClick={toggleTargetingExpanded}>
+                    <div className="flex items-center gap-2">
+                      <Icon icon={isTargetingExpanded ? "mdi:minus" : "mdi:plus"} width="18" height="18" className="md:w-5 md:h-5 text-gray-700" />
+                      <span className="font-semibold text-sm md:text-base">Targeting Cookies</span>
+                    </div>
+                    <button onClick={(e) => { e.stopPropagation(); toggleTargetingEnabled(); }}>
+                      <Icon icon={isTargetingEnabled ? "mdi:toggle-right" : "mdi:toggle-left"} width="36" height="20" className={isTargetingEnabled ? "text-blue-600" : "text-gray-400"} />
+                    </button>
+                  </div>
+                  {isTargetingExpanded && (
+                    <div className="pb-3 md:pb-4 text-gray-600 text-xs md:text-sm">
+                      <p>Targeting cookies are used to deliver advertisements more relevant to you and your interests.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Buttons */}
+              <div className="mt-6 md:mt-8 flex flex-col sm:flex-row gap-3 md:gap-4">
+                <button 
+                  className="bg-black text-white text-sm md:text-base font-semibold rounded-md px-4 py-2 md:py-3 hover:bg-gray-800 transition-colors flex-1"
+                  onClick={handleOnlyNecessaryClick}
+                >
+                  Only Necessary Cookies
+                </button>
+                <button 
+                  className="bg-white text-black text-sm md:text-base font-semibold rounded-md px-4 py-2 md:py-3 border border-gray-300 hover:bg-gray-100 transition-colors flex-1"
+                  onClick={handleConfirmChoicesClick}
+                >
+                  Confirm My Choices
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
+
+// BranchDropdown component
+interface BranchDropdownProps {
+  name: string;
+  children: React.ReactNode;
+}
+
+const BranchDropdown: React.FC<BranchDropdownProps> = ({ name, children }) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        className="w-full text-left px-2 py-1 hover:text-orange-500 transition-colors"
+        onClick={() => setOpen(!open)}
+      >
+        <span>{name}</span>
+      </button>
+      {open && (
+        <div className="pl-4 pt-1">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Footer;
