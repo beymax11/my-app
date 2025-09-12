@@ -1,36 +1,289 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# E-Commerce Store
 
-## Getting Started
+A modern, full-featured e-commerce website built with Next.js 15, React 19, TypeScript, and Tailwind CSS.
 
-First, run the development server:
+## 🚀 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### Core E-Commerce Features
+- **Product Catalog**: Browse products with filtering and sorting
+- **Shopping Cart**: Add, remove, and update cart items
+- **Checkout Process**: Complete order placement with form validation
+- **User Authentication**: Login, registration, and profile management
+- **Order Management**: Track orders and order history
+- **Payment Integration**: Multiple payment methods support
+
+### Technical Features
+- **Modern Stack**: Next.js 15 with App Router
+- **Type Safety**: Full TypeScript implementation
+- **Responsive Design**: Mobile-first responsive design
+- **State Management**: Context API and custom hooks
+- **API Routes**: RESTful API endpoints
+- **Form Handling**: React Hook Form integration
+- **Styling**: Tailwind CSS with custom components
+
+## 📁 Project Structure
+
+```
+src/
+├── app/                    # Next.js App Router pages
+│   ├── api/               # API routes
+│   │   ├── products/      # Product API endpoints
+│   │   └── cart/          # Cart API endpoints
+│   ├── cart/              # Shopping cart page
+│   ├── checkout/          # Checkout page
+│   ├── products/          # Products listing page
+│   ├── layout.tsx         # Root layout
+│   └── page.tsx           # Homepage
+├── components/            # Reusable React components
+│   ├── ui/                # Basic UI components
+│   │   ├── Button.tsx
+│   │   ├── Input.tsx
+│   │   └── Card.tsx
+│   ├── layout/             # Layout components
+│   │   ├── Header.tsx
+│   │   └── Footer.tsx
+│   ├── ecommerce/         # E-commerce specific components
+│   │   ├── ProductCard.tsx
+│   │   └── CartItem.tsx
+│   └── index.ts           # Component exports
+├── context/               # React Context providers
+│   ├── CartContext.tsx    # Shopping cart state
+│   ├── UserContext.tsx    # User authentication state
+│   └── index.ts
+├── hooks/                 # Custom React hooks
+│   ├── useCart.ts         # Cart management hook
+│   ├── useProducts.ts     # Products data hook
+│   └── index.ts
+├── types/                 # TypeScript type definitions
+│   ├── product.ts         # Product-related types
+│   ├── cart.ts            # Cart-related types
+│   ├── user.ts            # User-related types
+│   ├── order.ts           # Order-related types
+│   └── index.ts
+├── utils/                 # Utility functions
+│   ├── format.ts          # Formatting utilities
+│   ├── validation.ts       # Validation utilities
+│   ├── api.ts             # API helper functions
+│   └── index.ts
+└── lib/                   # Library configurations
+    ├── constants.ts        # App constants
+    └── index.ts
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Getting Started
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Installation
 
-## Learn More
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd ecommerce-store
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+2. **Install dependencies**
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env.local
+   ```
+   
+   Update the environment variables in `.env.local`:
+   ```env
+   NEXT_PUBLIC_API_URL=http://localhost:3000/api
+   NEXT_PUBLIC_APP_URL=http://localhost:3000
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+4. **Run the development server**
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
 
-## Deploy on Vercel
+5. **Open your browser**
+   Navigate to [http://localhost:3000](http://localhost:3000)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📦 Available Scripts
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
+- `npm run type-check` - Run TypeScript type checking
+
+## 🎨 Styling
+
+This project uses **Tailwind CSS** for styling. The design system includes:
+
+- **Color Palette**: Blue, gray, and accent colors
+- **Typography**: Custom font stack with Geist fonts
+- **Components**: Reusable UI components with consistent styling
+- **Responsive Design**: Mobile-first approach with responsive breakpoints
+
+## 🔧 Configuration
+
+### App Configuration
+Edit `src/lib/constants.ts` to customize:
+- App name and description
+- Currency settings
+- Cart configuration
+- Product categories
+- Payment methods
+
+### API Configuration
+The app includes mock API endpoints for development:
+- `/api/products` - Product management
+- `/api/cart` - Cart operations
+- `/api/users` - User authentication (to be implemented)
+
+## 🚀 Deployment
+
+### Vercel (Recommended)
+1. Push your code to GitHub
+2. Connect your repository to Vercel
+3. Deploy automatically
+
+### Other Platforms
+The app can be deployed to any platform that supports Next.js:
+- Netlify
+- AWS Amplify
+- Railway
+- DigitalOcean App Platform
+
+## 🧪 Testing
+
+```bash
+# Run type checking
+npm run type-check
+
+# Run linting
+npm run lint
+```
+
+## 📝 API Documentation
+
+### Products API
+
+#### GET /api/products
+Fetch products with optional filtering
+```typescript
+// Query parameters
+{
+  category?: string;
+  brand?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  search?: string;
+}
+```
+
+#### GET /api/products/[id]
+Fetch a single product by ID
+
+#### POST /api/products
+Create a new product
+```typescript
+// Request body
+{
+  name: string;
+  price: number;
+  category: string;
+  brand: string;
+  // ... other product fields
+}
+```
+
+### Cart API
+
+#### GET /api/cart
+Fetch user's cart
+
+#### POST /api/cart
+Add item to cart
+```typescript
+// Request body
+{
+  productId: string;
+  quantity: number;
+  size?: string;
+  color?: string;
+}
+```
+
+## 🔐 Authentication
+
+The app includes a user authentication system with:
+- User registration and login
+- Profile management
+- Protected routes
+- Session management
+
+## 🛒 Shopping Cart
+
+Features include:
+- Add/remove items
+- Update quantities
+- Persistent cart storage
+- Cart summary with totals
+- Shipping and tax calculations
+
+## 💳 Payment Integration
+
+Supported payment methods:
+- Credit/Debit Cards
+- GCash
+- PayPal
+- Bank Transfer
+
+## 📱 Responsive Design
+
+The app is fully responsive and optimized for:
+- Mobile devices (320px+)
+- Tablets (768px+)
+- Desktop (1024px+)
+- Large screens (1280px+)
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 🆘 Support
+
+For support and questions:
+- Create an issue in the repository
+- Check the documentation
+- Review the code examples
+
+## 🔮 Future Enhancements
+
+- [ ] User reviews and ratings
+- [ ] Wishlist functionality
+- [ ] Product recommendations
+- [ ] Advanced search with filters
+- [ ] Order tracking
+- [ ] Email notifications
+- [ ] Admin dashboard
+- [ ] Inventory management
+- [ ] Multi-language support
+- [ ] Dark mode theme
+
+---
+
+Built with ❤️ using Next.js, React, and TypeScript
