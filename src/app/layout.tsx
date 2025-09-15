@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { CartProvider, UserProvider } from "../context";
+import { CartProvider, UserProvider, CartIconProvider } from "../context";
+import { Header } from "../components/layout";
+import Footer from "../components/layout/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "E-Commerce Store",
+  title: "IZAJ",
   description: "Your one-stop shop for quality products at great prices",
 };
 
@@ -30,7 +32,11 @@ export default function RootLayout({
       >
         <UserProvider>
           <CartProvider>
-            {children}
+            <CartIconProvider>
+              <Header />
+              {children}
+              <Footer />
+            </CartIconProvider>
           </CartProvider>
         </UserProvider>
       </body>

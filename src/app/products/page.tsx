@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Header, Footer, ProductCard } from '../../components';
+import { ProductCard } from '../../components';
 import { useProducts } from '../../hooks';
 
 export default function ProductsPage() {
@@ -10,13 +10,11 @@ export default function ProductsPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
           </div>
         </div>
-        <Footer />
       </div>
     );
   }
@@ -24,22 +22,19 @@ export default function ProductsPage() {
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Error Loading Products</h2>
             <p className="text-gray-600">{error}</p>
           </div>
         </div>
-        <Footer />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
-      
+       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
         <div className="mb-8">
@@ -97,8 +92,6 @@ export default function ProductsPage() {
           </div>
         )}
       </main>
-
-      <Footer />
     </div>
   );
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Header, Footer } from '../components';
 import { useUserContext } from '../context/UserContext';
 import HeroSection from '../components/sections/HeroSection';
 import ItemsCategory from '../components/sections/ItemsCategory';
@@ -19,14 +18,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white text-white font-sans">
-      <Header 
-        user={user}
-        setIsAccountDropdownOpen={setIsAccountDropdownOpen}
-        isAccountDropdownOpen={isAccountDropdownOpen}
-        handleLogout={logout}
-        setUser={() => {}} // This will be handled by the context
-      />
-      
       {/* Main Content */}
       <main className="p-0 mx-0 w-full">
         <HeroSection />
@@ -42,7 +33,7 @@ export default function Home() {
         <div className="w-full">
           <Link href="/product-list">
             <img
-              src="banner.png"
+              src="/banner.png"
               alt="Testimonials"
               className="w-full object-cover"
             />
@@ -67,8 +58,6 @@ export default function Home() {
           }
         `}</style>
       </main>
-
-      <Footer />
     </div>
   );
 }

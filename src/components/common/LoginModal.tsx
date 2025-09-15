@@ -224,7 +224,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                 {!isLogin && (
                   <div className="grid grid-cols-2 gap-3 mb-6">
                     <div className="space-y-1.5">
-                      <label className="block text-sm font-medium text-gray-700">First Name</label>
+                      <label className="block text-sm font-medium text-black">First Name</label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                           <Icon icon="mdi:account" className="w-4 h-4 text-gray-400" />
@@ -234,7 +234,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                           name="firstName"
                           value={formData.firstName}
                           onChange={handleInputChange}
-                          className={`w-full pl-9 pr-9 py-2.5 border ${errors.firstName ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm`}
+                          className={`w-full pl-9 pr-9 py-2.5 border bg-white text-black placeholder-gray-500 ${errors.firstName ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm`}
                           placeholder="Enter first name"
                         />
                         {errors.firstName && (
@@ -248,7 +248,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                       </div>
                     </div>
                     <div className="space-y-1.5">
-                      <label className="block text-sm font-medium text-gray-700">Last Name</label>
+                      <label className="block text-sm font-medium text-black">Last Name</label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                           <Icon icon="mdi:account" className="w-4 h-4 text-gray-400" />
@@ -258,7 +258,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                           name="lastName"
                           value={formData.lastName}
                           onChange={handleInputChange}
-                          className={`w-full pl-9 pr-9 py-2.5 border ${errors.lastName ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm`}
+                          className={`w-full pl-9 pr-9 py-2.5 border bg-white text-black placeholder-gray-500 ${errors.lastName ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm`}
                           placeholder="Enter last name"
                         />
                         {errors.lastName && (
@@ -276,7 +276,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
 
                 {!isLogin && (
                   <div className="space-y-1.5">
-                    <label className="block text-sm font-medium text-gray-700">Phone Number</label>
+                    <label className="block text-sm font-medium text-black">Phone Number</label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <Icon icon="mdi:phone" className="w-4 h-4 text-gray-400" />
@@ -286,7 +286,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                         name="phoneNumber"
                         value={formData.phoneNumber}
                         onChange={handleInputChange}
-                        className={`w-full pl-9 pr-9 py-2.5 border ${errors.phoneNumber ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm`}
+                        className={`w-full pl-9 pr-9 py-2.5 border bg-white text-black placeholder-gray-500 ${errors.phoneNumber ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm`}
                         placeholder="Enter phone number"
                         pattern="[0-9]{11}"
                         maxLength={11}
@@ -304,7 +304,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                 )}
 
                 <div className="space-y-1.5">
-                  <label className="block text-sm font-medium text-gray-700">Email</label>
+                  <label className="block text-sm font-medium text-black">Email</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <Icon icon="mdi:email" className="w-4 h-4 text-gray-400" />
@@ -314,7 +314,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      className={`w-full pl-9 pr-9 py-2.5 border ${errors.email ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm`}
+                      className={`w-full pl-9 pr-9 py-2.5 border bg-white text-black placeholder-gray-500 ${errors.email ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm`}
                       placeholder="Enter your email"
                     />
                     {errors.email && (
@@ -330,7 +330,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                 {!isLogin ? (
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
-                      <label className="block text-sm font-medium text-gray-700">Password</label>
+                      <label className="block text-sm font-medium text-black">Password</label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                           <Icon icon="mdi:lock" className="w-4 h-4 text-gray-400" />
@@ -340,7 +340,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                           name="password"
                           value={formData.password}
                           onChange={handleInputChange}
-                          className={`w-full pl-9 pr-9 py-2.5 border ${errors.password ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm`}
+                          className={`w-full pl-9 pr-9 py-2.5 border bg-white text-black placeholder-gray-500 ${errors.password ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm`}
                           placeholder="Enter password"
                         />
                         <button
@@ -361,7 +361,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                       </div>
                     </div>
                     <div className="space-y-1.5">
-                      <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
+                      <label className="block text-sm font-medium text-black">Confirm Password</label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                           <Icon icon="mdi:lock-check" className="w-4 h-4 text-gray-400" />
@@ -371,7 +371,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                           name="confirmPassword"
                           value={formData.confirmPassword}
                           onChange={handleInputChange}
-                          className={`w-full pl-9 pr-9 py-2.5 border ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm`}
+                          className={`w-full pl-9 pr-9 py-2.5 border bg-white text-black placeholder-gray-500 ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm`}
                           placeholder="Confirm password"
                         />
                         <button
@@ -394,7 +394,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                   </div>
                 ) : (
                   <div className="space-y-1.5">
-                    <label className="block text-sm font-medium text-gray-700">Password</label>
+                    <label className="block text-sm font-medium text-black">Password</label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <Icon icon="mdi:lock" className="w-4 h-4 text-gray-400" />
@@ -404,7 +404,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                         name="password"
                         value={formData.password}
                         onChange={handleInputChange}
-                        className={`w-full pl-9 pr-9 py-2.5 border ${errors.password ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm`}
+                        className={`w-full pl-9 pr-9 py-2.5 border bg-white text-black placeholder-gray-500 ${errors.password ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm`}
                         placeholder="Enter your password"
                       />
                       <button
@@ -436,7 +436,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                         onChange={(e) => setRememberMe(e.target.checked)}
                         className="h-3.5 w-3.5 text-black focus:ring-black border-gray-300 rounded"
                       />
-                      <label htmlFor="remember-me" className="ml-2 block text-gray-700">
+                      <label htmlFor="remember-me" className="ml-2 block text-black">
                         Remember me
                       </label>
                     </div>

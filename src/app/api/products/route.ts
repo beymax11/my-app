@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 const mockProducts = [
   {
     id: '1',
-    name: 'Premium Wireless Headphones',
+    name: 'Abednego | Chandelier/Large',
     description: 'High-quality wireless headphones with noise cancellation',
     price: 2999,
     originalPrice: 3999,

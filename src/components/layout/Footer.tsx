@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import { Icon } from '@iconify/react';
 import Link from 'next/link';
@@ -96,13 +98,13 @@ const Footer: React.FC = () => {
             <Slider {...sliderSettings}>
               {/* Free Delivery & Installation */}
               <div className="px-2">
-                <div className="flex flex-col items-center text-center">
+                <Link href="/delivery" className="flex flex-col items-center text-center hover:text-orange-500">
                   <Icon icon="mdi:truck-delivery-outline" width="28" height="28" className="text-black mb-3" />
                   <div>
                     <h3 className="font-semibold text-base md:text-lg mb-1 md:mb-2 text-black">Free delivery & installation</h3>
                     <p className="text-sm md:text-base text-gray-600">For orders P10,000.00 and above within Metro Manila.</p>
                   </div>
-                </div>
+                </Link>
               </div>
           
               {/* Phone Contact */}
@@ -143,13 +145,13 @@ const Footer: React.FC = () => {
           {/* Desktop Grid */}
           <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
             {/* Free Delivery & Installation */}
-            <div className="flex items-start">
+            <Link href="/delivery" className="flex items-start hover:text-orange-500">
               <Icon icon="mdi:truck-delivery-outline" width="28" height="28" className="text-black mr-3 md:mr-4 mt-1 flex-shrink-0" />
               <div>
                 <h3 className="font-semibold text-base md:text-lg mb-1 md:mb-2 text-black">Free delivery & installation</h3>
                 <p className="text-sm md:text-base text-gray-600">For orders P10,000.00 and above within Metro Manila.</p>
               </div>
-            </div>
+            </Link>
         
             {/* Phone Contact */}
             <div className="flex items-start">
@@ -234,9 +236,9 @@ const Footer: React.FC = () => {
                 <li><a href="/privacypolicy" className="hover:text-orange-500 transition-colors text-sm md:text-base text-gray-700">Privacy Policy</a></li>
                 <li><a href="/return" className="hover:text-orange-500 transition-colors text-sm md:text-base text-gray-700">Returns & Refunds</a></li>
                 <li><a href="/help" className="hover:text-orange-500 transition-colors text-sm md:text-base text-gray-700">Help & FAQs</a></li>
-                <li><a href="/term" className="hover:text-orange-500 transition-colors text-sm md:text-base text-gray-700">Terms & Conditions</a></li>
+                <li><a href="/terms" className="hover:text-orange-500 transition-colors text-sm md:text-base text-gray-700">Terms & Conditions</a></li>
                 <li><a href="/warranty" className="hover:text-orange-500 transition-colors text-sm md:text-base text-gray-700">Warranty Terms</a></li>
-                <li><a href="/career" className="hover:text-orange-500 transition-colors text-sm md:text-base text-gray-700">Careers</a></li>
+                <li><a href="/careers" className="hover:text-orange-500 transition-colors text-sm md:text-base text-gray-700">Careers</a></li>
               </ul>
             </div>
 
@@ -427,7 +429,7 @@ const Footer: React.FC = () => {
               <a href="/cookiepolicy" className="hover:underline">Cookie policy</a>
               <a href="#" className="hover:underline" onClick={handleCookieSettingsClick}>Cookie settings</a>
               <a href="/termofuse" className="hover:underline">Terms of use</a>
-              <a href="/termsofpurchase" className="hover:underline">Terms of purchase</a>
+              <a href="/termofpurchase" className="hover:underline">Terms of purchase</a>
             </div>
           </div>
         </div>
@@ -435,14 +437,14 @@ const Footer: React.FC = () => {
 
       {/* Cookie Settings Modal */}
       {showCookieModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 z-50 flex justify-start">
-          <div className={`relative w-full md:w-96 lg:w-[1200px] bg-white h-full shadow-xl transform transition-transform ease-in-out duration-300 ${showCookieModal ? 'translate-x-0' : '-translate-x-full'} overflow-y-auto`}>
+        <div className="fixed inset-0 bg-gray-600/20 backdrop-blur-[1px] z-50 flex items-start justify-start" onClick={handleCloseCookieModal}>
+          <div className={`relative w-[360px] sm:w-[400px] md:w-[420px] bg-white h-screen shadow-xl rounded-none transform transition-transform ease-in-out duration-300 ${showCookieModal ? 'translate-x-0' : '-translate-x-full'} overflow-y-auto`} onClick={(e) => e.stopPropagation()}>
             {/* Close Button */}
-            <button onClick={handleCloseCookieModal} className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100">
+            <button onClick={handleCloseCookieModal} className="absolute top-3 right-3 p-2 rounded-full hover:bg-gray-100">
               <Icon icon="mdi:close" width="24" height="24" className="text-gray-700" />
             </button>
 
-            <div className="p-4 md:p-6 mt-8">
+            <div className="p-4 md:p-6 mt-6">
               <h2 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">Cookie Preferences</h2>
               <p className="text-gray-600 text-xs md:text-sm mb-4 md:mb-6">
                 When you visit any website, it may store or retrieve information

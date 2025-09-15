@@ -202,11 +202,11 @@ export default function FreshDrops() {
               {allProducts.map((product) => (
                 <div
                   key={product.id}
-                  className="bg-white overflow-hidden flex flex-col h-[420px] max-w-[380px] min-w-0 rounded-lg"
+                  className="bg-white overflow-hidden flex flex-col h-[460px] max-w-[380px] min-w-0 rounded-lg"
                   style={isMobile ? { width: '60vw', minWidth: '60vw', flex: '0 0 60vw' } : isTablet ? { width: '33.33vw', minWidth: '33.33vw', flex: '0 0 33.33vw' } : {}}
                 >
-                  <div className="relative flex-shrink-0 h-[340px] flex items-center justify-center overflow-hidden">
-                    <img src={product.image} alt={product.name} className="w-full h-full object-contain" />
+                  <div className="relative flex-shrink-0 h-[380px] flex items-center justify-center overflow-hidden">
+                    <img src={product.image} alt={product.name} className="w-full h-full object-contain object-left-top" />
                     <span className="absolute top-3 left-3 bg-green-600 text-white text-xs font-bold px-2 py-1  shadow-sm whitespace-nowrap">NEW</span>
                   </div>
                   <div className="p-3 flex flex-col flex-1">
@@ -244,9 +244,9 @@ export default function FreshDrops() {
               className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6 justify-center transition-all duration-300 ease-out ${getSlideClass(isFreshDropsAnimating, freshDropsSlideDirection)}`}
             >
               {freshDropsProducts.map((product) => (
-                <div key={product.id} className="bg-white overflow-hidden relative flex flex-col h-[420px]">
-                  <div className="relative flex-grow h-[340px] flex items-center justify-center overflow-hidden">
-                    <img src={product.image} alt={product.name} className="w-full h-full object-contain" />
+                <div key={product.id} className="bg-white overflow-hidden relative flex flex-col h-[460px]">
+                  <div className="relative flex-grow h-[380px] flex items-center justify-center overflow-hidden">
+                    <img src={product.image} alt={product.name} className="w-full h-full object-contain object-left-top" />
                     <span className="absolute top-3 left-3 bg-green-600 text-white text-xs font-bold px-2 py-1  shadow-sm whitespace-nowrap">NEW</span>
                   </div>
                   <div className="p-3 sm:p-4 flex flex-col flex-grow">

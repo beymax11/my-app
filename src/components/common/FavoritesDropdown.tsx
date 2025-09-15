@@ -60,7 +60,7 @@ export default function FavoritesDropdown({ user, onOpenAuthModal }: FavoritesDr
             </h3>
             {user && favorites.length > 0 && (
               <Link 
-                href="/my-favorites" 
+                href="/favorites" 
                 className="text-sm text-orange-500 hover:text-orange-600 font-medium transition-colors duration-200 flex items-center gap-1"
                 onClick={() => setIsOpen(false)}
               >

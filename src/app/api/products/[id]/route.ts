@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Mock data - in a real app, this would come from a database
+
 const mockProducts = [
   {
     id: '1',
-    name: 'Premium Wireless Headphones',
+    name: 'Abednego | Chandelier/Large',
     description: 'High-quality wireless headphones with noise cancellation',
     price: 2999,
     originalPrice: 3999,

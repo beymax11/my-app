@@ -7,7 +7,7 @@ export default function FeaturedProducts() {
         {/* Top Picks Card */}
         <div className="relative w-full h-64 overflow-hidden">
           <img
-            src="featured.jpg"
+            src="/featured.jpg"
             alt="Top Picks"
             className="w-full h-full object-cover"
           />
@@ -23,7 +23,7 @@ export default function FeaturedProducts() {
         {/* What's Hot Card */}
         <div className="relative w-full h-64 overflow-hidden">
           <img
-            src="featured.jpg"
+            src="/featured.jpg"
             alt="What's Hot"
             className="w-full h-full object-cover"
           />

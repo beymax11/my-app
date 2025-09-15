@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Icon } from '@iconify/react';
-import { Header, Footer, Button } from '../../components';
+import { Button } from '../../components';
 import { useCartContext } from '../../context';
 import { formatCurrency } from '../../utils/helpers/format';
 import { calculateShipping, calculateTax, calculateTotal } from '../../utils/calculations/cartCalculations';
@@ -47,7 +47,6 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen">
-      <Header />
       
       <div className="max-w-[94%] mx-auto mt-8 px-5 sm:px-8 ml-6 mr-6">
         <div className="flex items-center justify-between mb-8">
@@ -241,7 +240,6 @@ export default function CartPage() {
         </div>
       </div>
 
-      <Footer />
     </div>
   );
 }

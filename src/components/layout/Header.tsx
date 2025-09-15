@@ -1,3 +1,4 @@
+"use client";
 // Capitalize first letter of each name
 function capitalize(str: string) {
     if (!str) return '';
@@ -13,6 +14,7 @@ function capitalize(str: string) {
   import NotificationDropdown from '../common/NotificationDropdown';
   import LoginModal from '../common/LoginModal';
   import { useUserContext } from '../../context/UserContext';
+  import { useCartContext } from '../../context/CartContext';
   
   interface User {
     firstName: string;
@@ -37,6 +39,7 @@ function capitalize(str: string) {
   }) => {
     // Use UserContext as primary source, props as fallback
     const { user: contextUser, logout: contextLogout } = useUserContext();
+    const { cart } = useCartContext();
     const user = propUser !== undefined ? propUser : contextUser;
     const handleLogout = propHandleLogout || contextLogout;
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -47,6 +50,7 @@ function capitalize(str: string) {
     const accountDropdownRef = useRef<HTMLDivElement>(null);
     const productsDropdownRef = useRef<HTMLLIElement>(null);
     const mobileMenuRef = useRef<HTMLDivElement>(null);
+    const cartIconRef = useRef<HTMLAnchorElement>(null);
     const router = useRouter();
     const [isMobile, setIsMobile] = useState(false);
     const [isClient, setIsClient] = useState(false);
@@ -188,7 +192,7 @@ function capitalize(str: string) {
                     <button
                       onClick={() => {
                         if (user) {
-                          router.push('/my-profile');
+                          router.push('/account');
                         } else {
                           setIsLoginModalOpen(true);
                         }
@@ -256,7 +260,7 @@ function capitalize(str: string) {
                           <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl z-50 overflow-hidden border border-gray-200 transform origin-top-right transition-all duration-200 ease-out">
                             <div className="py-1">
                               <Link
-                                href="/my-profile"
+                                href="/account"
                                 className="flex items-center px-4 py-3 text-sm text-black hover:bg-gray-50 hover:text-black transition-colors group"
                                 onClick={() => setIsAccountDropdownOpen(false)}
                               >
@@ -294,7 +298,7 @@ function capitalize(str: string) {
                       <button
                         onClick={() => {
                           if (user) {
-                            router.push('/my-favorites');
+                            router.push('/favorites');
                         } else {
                           setIsLoginModalOpen(true);
                         }
@@ -337,16 +341,18 @@ function capitalize(str: string) {
                 ) : (
                   // Client-side rendering: use user state
                   user ? (
-                    <Link href="/cart" className="relative">
+                    <Link href="/cart" className="relative" ref={cartIconRef} id="cart-icon">
                       <Icon
                         icon="mdi:cart-outline"
                         className="text-black cursor-pointer hover:text-orange-500 w-7 h-7 translate-y-1"
                         width="28"
                         height="28"
                       />
-                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                        2
-                      </span>
+                      {cart.totalItems > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                          {cart.totalItems}
+                        </span>
+                      )}
                     </Link>
                   ) : (
                     <button
@@ -663,28 +669,28 @@ function capitalize(str: string) {
                           <div className="grid grid-cols-2 gap-3">
                             <div className="group cursor-pointer">
                               <div className="relative overflow-hidden rounded-lg mb-2">
-                                <img src="ceiling.avif" alt="Ceiling Lights" className="w-full h-24 object-cover group-hover:scale-110 transition-all duration-300" />
+                                <img src="/ceiling.avif" alt="Ceiling Lights" className="w-full h-24 object-cover group-hover:scale-110 transition-all duration-300" />
                                 <div className="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-10 transition-all duration-300"></div>
                               </div>
                               <p className="text-sm font-medium">Ceiling Lights</p>
                             </div>
                             <div className="group cursor-pointer">
                               <div className="relative overflow-hidden rounded-lg mb-2">
-                                <img src="chandelier.avif" alt="Chandeliers" className="w-full h-24 object-cover group-hover:scale-110 transition-all duration-300" />
+                                <img src="/chandelier.avif" alt="Chandeliers" className="w-full h-24 object-cover group-hover:scale-110 transition-all duration-300" />
                                 <div className="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-10 transition-all duration-300"></div>
                               </div>
                               <p className="text-sm font-medium">Chandeliers</p>
                             </div>
                             <div className="group cursor-pointer">
                               <div className="relative overflow-hidden rounded-lg mb-2">
-                                <img src="pendant.avif" alt="Pendant Lights" className="w-full h-24 object-cover group-hover:scale-110 transition-all duration-300" />
+                                <img src="/pendant.avif" alt="Pendant Lights" className="w-full h-24 object-cover group-hover:scale-110 transition-all duration-300" />
                                 <div className="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-10 transition-all duration-300"></div>
                               </div>
                               <p className="text-sm font-medium">Pendant Lights</p>
                             </div>
                             <div className="group cursor-pointer">
                               <div className="relative overflow-hidden rounded-lg mb-2">
-                                <img src="wall.avif" alt="Wall Lights" className="w-full h-24 object-cover group-hover:scale-110 transition-all duration-300" />
+                                <img src="/wall.avif" alt="Wall Lights" className="w-full h-24 object-cover group-hover:scale-110 transition-all duration-300" />
                                 <div className="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-10 transition-all duration-300"></div>
                               </div>
                               <p className="text-sm font-medium">Wall Lights</p>

@@ -1,6 +1,6 @@
 // App Configuration
 export const APP_CONFIG = {
-  name: 'E-Commerce Store',
+  name: 'IZAJ',
   description: 'Your one-stop shop for quality products at great prices',
   url: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
   currency: 'PHP',
