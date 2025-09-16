@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { CartProvider, UserProvider, CartIconProvider } from "../context";
+import { CartProvider, UserProvider, CartIconProvider, FavoritesProvider } from "../context";
 import { Header } from "../components/layout";
 import Footer from "../components/layout/Footer";
 
@@ -33,9 +33,11 @@ export default function RootLayout({
         <UserProvider>
           <CartProvider>
             <CartIconProvider>
-              <Header />
-              {children}
-              <Footer />
+              <FavoritesProvider>
+                <Header />
+                {children}
+                <Footer />
+              </FavoritesProvider>
             </CartIconProvider>
           </CartProvider>
         </UserProvider>

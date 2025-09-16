@@ -4,8 +4,10 @@ import { Icon } from '@iconify/react';
 import Link from 'next/link';
 import ChatNow from '../../../components/common/ChatNow';
 import { useCartContext } from '../../../context/CartContext';
-import { addToCartWithAnimation } from '../../../utils/cartAnimation';
+import { addToCartWithAnimation, addToFavoritesWithAnimation } from '../../../utils/cartAnimation';
 import ProductRatings from './ProductRatings';
+import { getAllProducts } from '../../../services/productService';
+import { useFavoritesContext } from '../../../context/FavoritesContext';
 
 interface PageProps {
   params: Promise<{ id: string }> | { id: string };
@@ -14,6 +16,7 @@ interface PageProps {
 const ItemDescription: React.FC<PageProps> = ({ params }) => {
   const resolvedParams = (params instanceof Promise) ? use(params) : params;
   const id = Number(resolvedParams.id);
+  const [source, setSource] = useState<string | null>(null);
   const [mainImage, setMainImage] = useState<string>("");
   const [zoomStyle, setZoomStyle] = useState<Record<string, string | number>>({});
   const imgRef = useRef<HTMLDivElement>(null);
@@ -27,37 +30,31 @@ const ItemDescription: React.FC<PageProps> = ({ params }) => {
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const addToCartBtnRef = useRef<HTMLButtonElement>(null);
   const { addToCart } = useCartContext();
+  const { toggleFavorite, isFavorite } = useFavoritesContext();
+  const favoriteBtnRef = useRef<HTMLButtonElement>(null);
   
   useEffect(() => {
-    const allProducts = [
-      {
-        id: 1,
-        name: "Abednego | Chandelier/Large",
-        price: "₱32,995",
-        image: "/abed.webp",
-        size: "φ110*H15cm",
-        colors: ["black", "gold", "silver"]
-      },
-      {
-        id: 2,
-        name: "Aberdeen | Modern LED Chandelier",
-        price: "₱25,464",
-        image: "/aber.webp",
-        colors: ["black", "gold"]
-      }
-    ];
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      setSource(url.searchParams.get('source'));
+    }
 
+    const allProducts = getAllProducts();
     const foundProduct = allProducts.find(p => p.id === id);
     if (foundProduct) {
       setProduct(foundProduct);
       setMainImage(foundProduct.image);
       setSelectedColor(foundProduct.colors?.[0] || "black");
-      const baseImage = foundProduct.image.replace('.webp', '');
+
+      const lastDotIndex = foundProduct.image.lastIndexOf('.');
+      const baseImage = lastDotIndex !== -1 ? foundProduct.image.slice(0, lastDotIndex) : foundProduct.image;
+      const extension = lastDotIndex !== -1 ? foundProduct.image.slice(lastDotIndex) : '';
+
       setThumbnails([
         foundProduct.image,
-        `${baseImage}2.webp`,
-        `${baseImage}3.webp`,
-        `${baseImage}4.webp`
+        `${baseImage}2${extension}`,
+        `${baseImage}3${extension}`,
+        `${baseImage}4${extension}`
       ]);
     }
   }, [id]);
@@ -197,10 +194,27 @@ const ItemDescription: React.FC<PageProps> = ({ params }) => {
                     <Icon icon="mdi:instagram" className="w-5 h-5 text-pink-500 cursor-pointer hover:opacity-80" />
                     <Icon icon="mdi:twitter" className="w-5 h-5 text-blue-400 cursor-pointer hover:opacity-80" />
                   </div>
-                  <div className="flex items-center text-gray-600 text-sm gap-1">
-                    <Icon icon="mdi:heart" className="text-red-500 text-lg" />
-                    Favorite (2.7k)
-                  </div>
+                  <button
+                    ref={favoriteBtnRef}
+                    onClick={async () => {
+                      const heartIconElement = document.getElementById('favorites-icon') || document.querySelector('[aria-label="Favorites"]') as HTMLElement | null;
+                      const startElement = favoriteBtnRef.current as unknown as Element;
+                      if (startElement && heartIconElement) {
+                        await addToFavoritesWithAnimation(
+                          startElement,
+                          heartIconElement,
+                          () => toggleFavorite({ productId: product.id.toString(), name: product.name, price: parseFloat(product.price.replace('₱', '').replace(',', '')), image: product.image })
+                        );
+                      } else {
+                        toggleFavorite({ productId: product.id.toString(), name: product.name, price: parseFloat(product.price.replace('₱', '').replace(',', '')), image: product.image });
+                      }
+                    }}
+                    className="flex items-center text-gray-600 text-sm gap-1 hover:opacity-80"
+                    aria-label="Toggle Favorite"
+                  >
+                    <Icon icon={isFavorite(product.id.toString()) ? 'mdi:heart' : 'mdi:heart-outline'} className={`text-lg ${isFavorite(product.id.toString()) ? 'text-red-500' : 'text-gray-600'}`} />
+                    {isFavorite(product.id.toString()) ? 'Added to Favorites' : 'Add to Favorites'}
+                  </button>
                 </div>
 
                 <div className="hidden md:block mt-4 p-4">
@@ -230,7 +244,11 @@ const ItemDescription: React.FC<PageProps> = ({ params }) => {
             <div className="md:hidden">
               <h2 className="text-2xl font-bold mb-4 text-black">{product.name}</h2>
               <div className="flex items-center mb-4 gap-2">
-                <span className="bg-red-600 text-white text-xs px-2 py-1 rounded">MONTHLY DEALS</span>
+                {source === 'new' ? (
+                  <span className="bg-green-600 text-white text-xs px-2 py-1 rounded">NEW COLLECTION</span>
+                ) : (
+                  <span className="bg-red-600 text-white text-xs px-2 py-1 rounded">MONTHLY DEALS</span>
+                )}
                 <div className="flex items-center">
                   <span className="mr-1 text-black">4.5</span>
                   {[...Array(4)].map((_, i) => (
@@ -339,10 +357,27 @@ const ItemDescription: React.FC<PageProps> = ({ params }) => {
                   <Icon icon="mdi:instagram" className="w-5 h-5 text-pink-500 cursor-pointer hover:opacity-80" />
                   <Icon icon="mdi:twitter" className="w-5 h-5 text-blue-400 cursor-pointer hover:opacity-80" />
                 </div>
-                <div className="flex items-center text-gray-600 text-sm gap-1">
-                  <Icon icon="mdi:heart" className="text-red-500 text-lg" />
-                  Favorite (2.7k)
-                </div>
+                <button
+                  ref={favoriteBtnRef}
+                  onClick={async () => {
+                    const heartIconElement = document.getElementById('favorites-icon') || document.querySelector('[aria-label="Favorites"]') as HTMLElement | null;
+                    const startElement = favoriteBtnRef.current as unknown as Element;
+                    if (startElement && heartIconElement) {
+                      await addToFavoritesWithAnimation(
+                        startElement,
+                        heartIconElement,
+                        () => toggleFavorite({ productId: product.id.toString(), name: product.name, price: parseFloat(product.price.replace('₱', '').replace(',', '')), image: product.image })
+                      );
+                    } else {
+                      toggleFavorite({ productId: product.id.toString(), name: product.name, price: parseFloat(product.price.replace('₱', '').replace(',', '')), image: product.image });
+                    }
+                  }}
+                  className="flex items-center text-gray-600 text-sm gap-1 hover:opacity-80"
+                  aria-label="Toggle Favorite"
+                >
+                  <Icon icon={isFavorite(product.id.toString()) ? 'mdi:heart' : 'mdi:heart-outline'} className={`text-lg ${isFavorite(product.id.toString()) ? 'text-red-500' : 'text-gray-600'}`} />
+                  {isFavorite(product.id.toString()) ? 'Added' : 'Add'}
+                </button>
               </div>
 
               <div className="mt-4 p-4">
@@ -412,7 +447,11 @@ const ItemDescription: React.FC<PageProps> = ({ params }) => {
               <h2 className="text-2xl md:text-3xl font-bold mb-4 text-black">{product.name}</h2>
 
               <div className="flex items-center mb-4 gap-2">
-                <span className="bg-red-600 text-white text-xs px-2 py-1 rounded">MONTHLY DEALS</span>
+                {source === 'new' ? (
+                  <span className="bg-green-600 text-white text-xs px-2 py-1 rounded">NEW COLLECTION</span>
+                ) : (
+                  <span className="bg-red-600 text-white text-xs px-2 py-1 rounded">MONTHLY DEALS</span>
+                )}
                 <div className="flex items-center">
                   <span className="mr-1 text-black">4.5</span>
                   {[...Array(4)].map((_, i) => (

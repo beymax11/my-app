@@ -67,12 +67,15 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         setUser(userData);
         localStorage.setItem('user', JSON.stringify(userData));
       } else {
-        // Fallback to mock data if user not found (for demo purposes)
+        // Fallback to derived data from email if user not found (for demo purposes)
+        const emailUsername = (email || '').split('@')[0] || '';
+        const normalizedName = emailUsername.replace(/[._-]+/g, ' ').trim();
+
         const mockUser: User = {
           id: '1',
           email,
-          firstName: 'John',
-          lastName: 'Doe',
+          firstName: normalizedName || 'User',
+          lastName: '',
           phone: '+63 912 345 6789',
           role: 'customer',
           isEmailVerified: true,

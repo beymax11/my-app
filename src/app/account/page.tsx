@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Icon } from '@iconify/react';
 import Link from 'next/link';
+import RequireAuth from '../../components/common/RequireAuth';
 
 const MyProfile: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -170,6 +171,7 @@ const MyProfile: React.FC = () => {
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   return (
+    <RequireAuth>
     <div className="flex flex-col min-h-screen bg-white text-white font-sans">
       {/* Mobile: My Account Plain Text with Dropdown Icon as Modal Trigger */}
       <div className="lg:hidden bg-white px-4 pt-4">
@@ -442,6 +444,7 @@ const MyProfile: React.FC = () => {
         </div>
       </main>
     </div>
+    </RequireAuth>
   );
 };
 

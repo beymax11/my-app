@@ -5,11 +5,14 @@ import { useRouter } from 'next/navigation';
 import { Icon } from '@iconify/react';
 import { Button } from '../../components';
 import { useCartContext } from '../../context';
+import { useFavoritesContext } from '../../context/FavoritesContext';
+import { addToFavoritesWithAnimation } from '../../utils/cartAnimation';
 import { formatCurrency } from '../../utils/helpers/format';
 import { calculateShipping, calculateTax, calculateTotal } from '../../utils/calculations/cartCalculations';
 
 export default function CartPage() {
   const { cart, updateQuantity, removeFromCart, clearCart } = useCartContext();
+  const { addFavorite, isFavorite } = useFavoritesContext();
   const router = useRouter();
   
   const [showShipping, setShowShipping] = useState(false);
@@ -81,7 +84,7 @@ export default function CartPage() {
                     
                     <div className="space-y-4">
                       <button 
-                        onClick={() => router.push('/products')}
+                        onClick={() => router.push('/product-list')}
                         className="w-full bg-black text-white px-8 py-4 rounded-xl font-semibold hover:bg-orange-500 transition-all duration-300 transform hover:scale-105 flex items-center justify-center text-base lg:text-lg shadow-lg"
                       >
                         <Icon icon="mdi:shopping" className="mr-3" width="20" height="20" />
@@ -153,8 +156,25 @@ export default function CartPage() {
                             <button onClick={() => handleRemoveItem(item.id)} className="text-black hover:text-red-500 transition-colors flex items-center p-2" aria-label="Remove">
                               <Icon icon="mdi:delete-outline" width="22" height="22" className="lg:w-6 lg:h-6 w-[22px] h-[22px]" />
                             </button>
-                            <button className="text-black hover:text-red-500 transition-colors flex items-center p-2" aria-label="Save for later">
-                              <Icon icon="mdi:heart-outline" width="22" height="22" className="lg:w-6 lg:h-6 w-[22px] h-[22px]" />
+                            <button
+                              onClick={async (e) => {
+                                const originEl = e.currentTarget as HTMLElement;
+                                const heartIconElement = document.getElementById('favorites-icon') || document.querySelector('[aria-label="Favorites"]') as HTMLElement | null;
+                                if (originEl && heartIconElement) {
+                                  await addToFavoritesWithAnimation(
+                                    originEl,
+                                    heartIconElement,
+                                    () => addFavorite({ productId: item.productId, name: item.name, price: item.price, image: item.image })
+                                  );
+                                } else {
+                                  addFavorite({ productId: item.productId, name: item.name, price: item.price, image: item.image });
+                                }
+                              }}
+                              className="text-black hover:text-red-500 transition-colors flex items-center p-2"
+                              aria-label="Save for later"
+                              title={isFavorite(item.productId) ? 'Already in favorites' : 'Save to favorites'}
+                            >
+                              <Icon icon={isFavorite(item.productId) ? 'mdi:heart' : 'mdi:heart-outline'} width="22" height="22" className={`lg:w-6 lg:h-6 w-[22px] h-[22px] ${isFavorite(item.productId) ? 'text-red-500' : ''}`} />
                             </button>
                           </div>
                         </div>

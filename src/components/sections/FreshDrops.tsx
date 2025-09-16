@@ -229,7 +229,7 @@ export default function FreshDrops() {
                     <p className="text-green-600 text-xs mt-1">● In stock</p>
                     <div className="flex-grow"></div>
                     <Link
-                      href={`/item-description/${product.id}`}
+                      href={`/item-description/${product.id}?source=new`}
                       className="mt-auto w-full bg-black text-white py-1.5 hover:bg-gray-800 transition-colors duration-300 text-xs text-center block"
                       style={{ marginTop: '16px' }}
                     >
@@ -268,7 +268,7 @@ export default function FreshDrops() {
                     <p className="font-bold text-gray-800 mt-auto text-sm sm:text-base">{product.price}</p>
                     <p className="text-green-600 text-xs mt-1 mb-3">● In stock</p>
                     <Link
-                      href={`/item-description/${product.id}`}
+                      href={`/item-description/${product.id}?source=new`}
                       className="mt-auto w-full bg-black text-white py-1.5 sm:py-2 hover:bg-gray-800 transition-colors duration-300 text-xs sm:text-sm text-center block"
                     >
                       Choose options

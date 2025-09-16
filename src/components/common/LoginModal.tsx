@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Icon } from '@iconify/react';
+import { AnimatePresence, motion } from 'framer-motion';
+import Image from 'next/image';
 import { useUserContext } from '../../context/UserContext';
 
 interface LoginModalProps {
@@ -26,9 +28,25 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [showForgot, setShowForgot] = useState(false);
+  const emailInputRef = useRef<HTMLInputElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
   
   const { login, register } = useUserContext();
   const slides = ['slide.jpg', 'slide2.jpg', 'slide3.jpg'];
+
+  const passwordScore = useMemo(() => {
+    const pwd = formData.password;
+    let score = 0;
+    if (pwd.length >= 8) score++;
+    if (/[A-Z]/.test(pwd)) score++;
+    if (/[a-z]/.test(pwd)) score++;
+    if (/[0-9]/.test(pwd)) score++;
+    if (/[^A-Za-z0-9]/.test(pwd)) score++;
+    return score;
+  }, [formData.password]);
+
+  const passwordStrengthLabel = ['Very weak', 'Weak', 'Fair', 'Good', 'Strong'][Math.min(passwordScore, 4)];
 
   // Reset form when modal opens/closes or mode changes
   useEffect(() => {
@@ -46,23 +64,47 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
   }, [isOpen, isLogin]);
 
   // Close modal on Escape key
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
+  const handleFocusTrap = useCallback((e: KeyboardEvent) => {
+    if (e.key !== 'Tab') return;
+    const container = modalRef.current;
+    if (!container) return;
+    const focusable = container.querySelectorAll<HTMLElement>(
+      'a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])'
+    );
+    const elements = Array.from(focusable).filter(el => !el.hasAttribute('disabled'));
+    if (elements.length === 0) return;
+    const first = elements[0];
+    const last = elements[elements.length - 1];
+    const active = document.activeElement as HTMLElement | null;
+    if (e.shiftKey) {
+      if (active === first) {
+        e.preventDefault();
+        last.focus();
       }
+    } else {
+      if (active === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'Tab') handleFocusTrap(e);
     };
 
     if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
+      document.addEventListener('keydown', handleKey);
       document.body.style.overflow = 'hidden';
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener('keydown', handleKey);
       document.body.style.overflow = 'unset';
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, handleFocusTrap]);
 
   // Slideshow timer
   useEffect(() => {
@@ -71,6 +113,12 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
     }, 2500);
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    if (isOpen && emailInputRef.current) {
+      emailInputRef.current.focus();
+    }
+  }, [isOpen]);
 
   const handleImageError = () => {
     setImageError(true);
@@ -164,63 +212,105 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
     setErrors({ general: `Social login (${provider}) is not available in demo mode.` });
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden" role="dialog" aria-modal="true">
-      <div className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm" aria-hidden="true" onClick={onClose} />
-      <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0 z-50">
-        <div className="relative overflow-hidden rounded-2xl text-left sm:my-8 w-full max-w-5xl z-50 shadow-2xl" style={{ height: '600px', backgroundColor: '#FFFFFF' }}>
-          <button onClick={onClose} className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 z-20" aria-label="Close modal">
-            <Icon icon="fa6-solid:xmark" className="w-5 h-5 text-gray-500" />
-          </button>
-          <div className="relative z-10 flex flex-col lg:flex-row h-full">
-            {/* Left side - Auth Form */}
-            <div className="w-full lg:w-1/2 p-6 md:p-8 flex flex-col">
-              <div className="text-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-1">
-                  {isLogin ? 'Log in to your account' : 'Create an IZAJ account'}
-                </h2>
-                {errors.general && (
-                  <div className="mt-2 text-sm text-red-600 bg-red-50 p-2 rounded-lg">
-                    {errors.general}
-                  </div>
-                )}
-              </div>
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 overflow-hidden"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="login-modal-title"
+        >
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+            aria-hidden="true"
+            onClick={onClose}
+          />
+          <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0 z-50">
+            <motion.div
+              ref={modalRef}
+              initial={{ y: 16, scale: 0.98, opacity: 0 }}
+              animate={{ y: 0, scale: 1, opacity: 1 }}
+              exit={{ y: 16, scale: 0.98, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+              className="relative overflow-hidden rounded-2xl text-left w-full max-w-lg lg:max-w-5xl z-50"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-zinc-200/60 to-transparent" />
+              <div className="relative rounded-2xl bg-white/85 backdrop-blur-md ring-1 ring-black/5 shadow-xl h-auto lg:h-[600px]">
+                <button onClick={onClose} className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-black z-20" aria-label="Close modal">
+                  <Icon icon="fa6-solid:xmark" className="w-5 h-5 text-gray-500" />
+                </button>
+                <div className="relative z-10 flex flex-col lg:flex-row h-full">
+                  {/* Left side - Auth Form */}
+                  <div className="w-full lg:w-1/2 p-6 md:p-8 flex flex-col">
+                    <div className="mb-4">
+                      <div className="grid grid-cols-2 gap-1 p-1 bg-gray-100 rounded-xl">
+                        <button
+                          type="button"
+                          onClick={() => { setIsLogin(true); setShowForgot(false); setErrors({}); }}
+                          className={`${isLogin ? 'bg-white shadow text-gray-900' : 'text-gray-600'} py-2 rounded-lg text-sm font-medium transition-colors`}
+                        >
+                          Sign in
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => { setIsLogin(false); setShowForgot(false); setErrors({}); }}
+                          className={`${!isLogin ? 'bg-white shadow text-gray-900' : 'text-gray-600'} py-2 rounded-lg text-sm font-medium transition-colors`}
+                        >
+                          Create account
+                        </button>
+                      </div>
+                    </div>
+                    <div className="text-center mb-4">
+                      <h2 id="login-modal-title" className="text-2xl font-bold text-gray-900 mb-1">
+                        {isLogin ? 'Log in to your account' : 'Create an IZAJ account'}
+                      </h2>
+                      {errors.general && (
+                        <div className="mt-2 text-sm text-red-600 bg-red-50 p-2 rounded-lg">
+                          {errors.general}
+                        </div>
+                      )}
+                    </div>
 
-              {isLogin && (
-                <div className="grid grid-cols-2 gap-3 mb-6">
-                  <button
-                    type="button"
-                    onClick={() => handleSocialLogin('google')}
-                    className="w-full flex items-center justify-center px-3 py-2.5 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
-                  >
-                    <Icon icon="mdi:google" className="w-4 h-4 mr-2" />
-                    Google
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleSocialLogin('facebook')}
-                    className="w-full flex items-center justify-center px-3 py-2.5 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
-                  >
-                    <Icon icon="mdi:facebook" className="w-4 h-4 mr-2 text-blue-600" />
-                    Facebook
-                  </button>
-                </div>
-              )}
+                    {isLogin && (
+                      <div className="grid grid-cols-2 gap-3 mb-6">
+                        <button
+                          type="button"
+                          onClick={() => handleSocialLogin('google')}
+                          className="w-full flex items-center justify-center px-3 py-3 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors active:scale-[.98]"
+                        >
+                          <Icon icon="mdi:google" className="w-4 h-4 mr-2" />
+                          Continue with Google
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleSocialLogin('facebook')}
+                          className="w-full flex items-center justify-center px-3 py-3 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors active:scale-[.98]"
+                        >
+                          <Icon icon="mdi:facebook" className="w-4 h-4 mr-2 text-blue-600" />
+                          Continue with Facebook
+                        </button>
+                      </div>
+                    )}
 
-              {isLogin && (
-                <div className="relative mb-6">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300"></div>
-                  </div>
-                  <div className="relative flex justify-center">
-                    <span className="px-4 bg-white text-sm font-medium text-gray-600">Or continue with email</span>
-                  </div>
-                </div>
-              )}
+                    {isLogin && (
+                      <div className="relative mb-6">
+                        <div className="absolute inset-0 flex items-center">
+                          <div className="w-full border-t border-gray-300"></div>
+                        </div>
+                        <div className="relative flex justify-center">
+                          <span className="px-4 bg-white/85 text-sm font-medium text-gray-600">Or continue with email</span>
+                        </div>
+                      </div>
+                    )}
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+                    <form onSubmit={handleSubmit} className="space-y-4">
                 {!isLogin && (
                   <div className="grid grid-cols-2 gap-3 mb-6">
                     <div className="space-y-1.5">
@@ -234,16 +324,11 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                           name="firstName"
                           value={formData.firstName}
                           onChange={handleInputChange}
-                          className={`w-full pl-9 pr-9 py-2.5 border bg-white text-black placeholder-gray-500 ${errors.firstName ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm`}
+                          className={`w-full pl-9 pr-9 py-3 text-[15px] border bg-white text-black placeholder-gray-500 ${errors.firstName ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-black focus:border-black transition-colors text-sm`}
                           placeholder="Enter first name"
                         />
                         {errors.firstName && (
-                          <div className="absolute inset-y-0 right-0 pr-3 flex items-center group">
-                            <Icon icon="mdi:information" className="w-4 h-4 text-red-500" />
-                            <div className="absolute right-0 top-full mt-1 hidden group-hover:block bg-red-50 text-red-600 text-xs p-2 rounded shadow-lg whitespace-nowrap z-50">
-                              {errors.firstName}
-                            </div>
-                          </div>
+                          <p className="mt-1 text-xs text-red-600">{errors.firstName}</p>
                         )}
                       </div>
                     </div>
@@ -258,16 +343,11 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                           name="lastName"
                           value={formData.lastName}
                           onChange={handleInputChange}
-                          className={`w-full pl-9 pr-9 py-2.5 border bg-white text-black placeholder-gray-500 ${errors.lastName ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm`}
+                          className={`w-full pl-9 pr-9 py-3 text-[15px] border bg-white text-black placeholder-gray-500 ${errors.lastName ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-black focus:border-black transition-colors text-sm`}
                           placeholder="Enter last name"
                         />
                         {errors.lastName && (
-                          <div className="absolute inset-y-0 right-0 pr-3 flex items-center group">
-                            <Icon icon="mdi:information" className="w-4 h-4 text-red-500" />
-                            <div className="absolute right-0 top-full mt-1 hidden group-hover:block bg-red-50 text-red-600 text-xs p-2 rounded shadow-lg whitespace-nowrap z-50">
-                              {errors.lastName}
-                            </div>
-                          </div>
+                          <p className="mt-1 text-xs text-red-600">{errors.lastName}</p>
                         )}
                       </div>
                     </div>
@@ -286,18 +366,13 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                         name="phoneNumber"
                         value={formData.phoneNumber}
                         onChange={handleInputChange}
-                        className={`w-full pl-9 pr-9 py-2.5 border bg-white text-black placeholder-gray-500 ${errors.phoneNumber ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm`}
+                        className={`w-full pl-9 pr-9 py-3 text-[15px] border bg-white text-black placeholder-gray-500 ${errors.phoneNumber ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-black focus:border-black transition-colors text-sm`}
                         placeholder="Enter phone number"
                         pattern="[0-9]{11}"
                         maxLength={11}
                       />
                       {errors.phoneNumber && (
-                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center group">
-                          <Icon icon="mdi:information" className="w-4 h-4 text-red-500" />
-                          <div className="absolute right-0 top-full mt-1 hidden group-hover:block bg-red-50 text-red-600 text-xs p-2 rounded shadow-lg whitespace-nowrap z-50">
-                            {errors.phoneNumber}
-                          </div>
-                        </div>
+                        <p className="mt-1 text-xs text-red-600">{errors.phoneNumber}</p>
                       )}
                     </div>
                   </div>
@@ -314,16 +389,14 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      className={`w-full pl-9 pr-9 py-2.5 border bg-white text-black placeholder-gray-500 ${errors.email ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm`}
+                      ref={emailInputRef}
+                      aria-invalid={!!errors.email}
+                      aria-describedby={errors.email ? 'email-help' : undefined}
+                      className={`w-full pl-9 pr-9 py-3 text-[15px] border bg-white text-black placeholder-gray-500 ${errors.email ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-black focus:border-black transition-colors text-sm`}
                       placeholder="Enter your email"
                     />
                     {errors.email && (
-                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center group">
-                        <Icon icon="mdi:information" className="w-4 h-4 text-red-500" />
-                        <div className="absolute right-0 top-full mt-1 hidden group-hover:block bg-red-50 text-red-600 text-xs p-2 rounded shadow-lg whitespace-nowrap z-50">
-                          {errors.email}
-                        </div>
-                      </div>
+                      <p id="email-help" className="mt-1 text-xs text-red-600">{errors.email}</p>
                     )}
                   </div>
                 </div>
@@ -340,22 +413,28 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                           name="password"
                           value={formData.password}
                           onChange={handleInputChange}
-                          className={`w-full pl-9 pr-9 py-2.5 border bg-white text-black placeholder-gray-500 ${errors.password ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm`}
+                          className={`w-full pl-9 pr-9 py-3 text-[15px] border bg-white text-black placeholder-gray-500 ${errors.password ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-black focus:border-black transition-colors text-sm`}
                           placeholder="Enter password"
                         />
                         <button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
-                          className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                          className="absolute inset-y-0 right-0 pr-3 flex items-center p-2 -m-2"
                         >
                           <Icon icon={showPassword ? "mdi:eye-off" : "mdi:eye"} className="w-4 h-4 text-gray-400 hover:text-gray-600" />
                         </button>
                         {errors.password && (
-                          <div className="absolute inset-y-0 right-8 pr-3 flex items-center group">
-                            <Icon icon="mdi:information" className="w-4 h-4 text-red-500" />
-                            <div className="absolute right-0 top-full mt-1 hidden group-hover:block bg-red-50 text-red-600 text-xs p-2 rounded shadow-lg whitespace-nowrap z-50">
-                              {errors.password}
+                          <p className="mt-1 text-xs text-red-600">{errors.password}</p>
+                        )}
+                        {!errors.password && formData.password && (
+                          <div className="mt-2">
+                            <div className="h-1.5 w-full bg-gray-200 rounded-full overflow-hidden">
+                              <div
+                                className={`h-full rounded-full ${passwordScore <= 1 ? 'bg-red-500' : passwordScore === 2 ? 'bg-yellow-500' : passwordScore === 3 ? 'bg-lime-500' : 'bg-green-600'}`}
+                                style={{ width: `${(passwordScore / 5) * 100}%` }}
+                              />
                             </div>
+                            <p className="mt-1 text-xs text-gray-600">Strength: {passwordStrengthLabel}</p>
                           </div>
                         )}
                       </div>
@@ -371,23 +450,18 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                           name="confirmPassword"
                           value={formData.confirmPassword}
                           onChange={handleInputChange}
-                          className={`w-full pl-9 pr-9 py-2.5 border bg-white text-black placeholder-gray-500 ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm`}
+                          className={`w-full pl-9 pr-9 py-3 text-[15px] border bg-white text-black placeholder-gray-500 ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-black focus:border-black transition-colors text-sm`}
                           placeholder="Confirm password"
                         />
                         <button
                           type="button"
                           onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                          className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                          className="absolute inset-y-0 right-0 pr-3 flex items-center p-2 -m-2"
                         >
                           <Icon icon={showConfirmPassword ? "mdi:eye-off" : "mdi:eye"} className="w-4 h-4 text-gray-400 hover:text-gray-600" />
                         </button>
                         {errors.confirmPassword && (
-                          <div className="absolute inset-y-0 right-8 pr-3 flex items-center group">
-                            <Icon icon="mdi:information" className="w-4 h-4 text-red-500" />
-                            <div className="absolute right-0 top-full mt-1 hidden group-hover:block bg-red-50 text-red-600 text-xs p-2 rounded shadow-lg whitespace-nowrap z-50">
-                              {errors.confirmPassword}
-                            </div>
-                          </div>
+                          <p className="mt-1 text-xs text-red-600">{errors.confirmPassword}</p>
                         )}
                       </div>
                     </div>
@@ -404,23 +478,18 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                         name="password"
                         value={formData.password}
                         onChange={handleInputChange}
-                        className={`w-full pl-9 pr-9 py-2.5 border bg-white text-black placeholder-gray-500 ${errors.password ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm`}
+                        className={`w-full pl-9 pr-9 py-3 text-[15px] border bg-white text-black placeholder-gray-500 ${errors.password ? 'border-red-500' : 'border-gray-300'} focus:ring-2 focus:ring-black focus:border-black transition-colors text-sm`}
                         placeholder="Enter your password"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center p-2 -m-2"
                       >
                         <Icon icon={showPassword ? "mdi:eye-off" : "mdi:eye"} className="w-4 h-4 text-gray-400 hover:text-gray-600" />
                       </button>
                       {errors.password && (
-                        <div className="absolute inset-y-0 right-8 pr-3 flex items-center group">
-                          <Icon icon="mdi:information" className="w-4 h-4 text-red-500" />
-                          <div className="absolute right-0 top-full mt-1 hidden group-hover:block bg-red-50 text-red-600 text-xs p-2 rounded shadow-lg whitespace-nowrap z-50">
-                            {errors.password}
-                          </div>
-                        </div>
+                        <p className="mt-1 text-xs text-red-600">{errors.password}</p>
                       )}
                     </div>
                   </div>
@@ -440,16 +509,21 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                         Remember me
                       </label>
                     </div>
-                    <a href="#" className="font-medium text-black hover:text-gray-700">
+                    <button type="button" onClick={() => setShowForgot(v => !v)} className="font-medium text-black hover:text-gray-700">
                       Forgot password?
-                    </a>
+                    </button>
+                  </div>
+                )}
+                {isLogin && showForgot && (
+                  <div className="mt-2 text-xs text-gray-600 bg-gray-50 border border-gray-200 p-2 rounded">
+                    Password reset is not available in demo mode.
                   </div>
                 )}
 
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full bg-black text-white py-2.5 px-4 rounded-xl font-medium hover:bg-gray-800 transition-colors duration-300 flex items-center justify-center space-x-2 shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-black/40 text-sm disabled:opacity-50"
+                  className="w-full bg-black text-white py-3 px-4 rounded-xl font-medium hover:bg-gradient-to-r hover:from-black hover:to-zinc-700 transition-colors duration-300 flex items-center justify-center space-x-2 shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-black/40 text-sm disabled:opacity-50 active:scale-[.98]"
                 >
                   {isLoading ? (
                     <>
@@ -464,30 +538,21 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                   )}
                 </button>
 
-                <div className="relative my-6">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300"></div>
-                  </div>
-                  <div className="relative flex justify-center">
-                    <span className="px-4 bg-white text-sm font-medium text-gray-600">
-                      {isLogin ? 'New at IZAJ?' : 'Already have an account?'}
-                    </span>
-                  </div>
-                </div>
+                <p className="text-[11px] text-gray-500 text-center">
+                  By continuing, you agree to IZAJ's{' '}
+                  <a className="underline hover:text-gray-700" href="/termofuse">Terms of Use</a> and{' '}
+                  <a className="underline hover:text-gray-700" href="/privacypolicy">Privacy Policy</a>.
+                </p>
 
-                <button
-                  type="button"
-                  onClick={toggleMode}
-                  className="w-full bg-white text-black py-2.5 px-4 rounded-xl font-medium hover:bg-gray-50 transition-colors duration-300 flex items-center justify-center space-x-2 border border-gray-300 shadow-sm hover:shadow-md text-sm"
-                >
-                  <Icon icon={isLogin ? "mdi:account-plus" : "mdi:login"} className="w-4 h-4" />
-                  <span>{isLogin ? 'Create Account' : 'Sign In'}</span>
-                </button>
+                
+              
+
+               
               </form>
             </div>
 
             {/* Right side - Image Slideshow */}
-            <div className="w-full lg:w-1/2 relative overflow-hidden bg-gray-100 mt-6 lg:mt-0">
+            <div className="hidden lg:block lg:w-1/2 relative overflow-hidden bg-gray-100">
               {!imageError ? (
                 <>
                   {slides.map((slide, index) => (
@@ -497,11 +562,13 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                         currentSlide === index ? 'opacity-100' : 'opacity-0'
                       }`}
                     >
-                      <img
+                      <Image
                         src={`/images/${slide}`}
                         alt={`Slide ${index + 1}`}
-                        className="w-full h-full object-cover"
-                        onError={handleImageError}
+                        fill
+                        sizes="(max-width:1024px) 100vw, 50vw"
+                        className="object-cover"
+                        onError={handleImageError as any}
                       />
                       <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70 flex items-center justify-center">
                         <div className="text-center text-white px-8 max-w-2xl">
@@ -555,10 +622,13 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                 </div>
               )}
             </div>
+                </div>
+              </div>
+            </motion.div>
           </div>
-        </div>
-      </div>
-    </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 

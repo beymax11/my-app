@@ -164,7 +164,7 @@ const ProductList: React.FC<ProductListProps> = ({
                 </div>
                 <p className="font-bold text-gray-800 mt-auto text-sm sm:text-base">{formatCurrency(product.price)}</p>
                 <p className="text-green-600 text-xs mt-1">● In stock</p>
-                <Link href={`/item-description/${product.id}`} className="mt-3 sm:mt-4 w-full bg-black text-white py-1.5 sm:py-2 hover:bg-gray-800 transition-colors duration-300 text-xs sm:text-sm text-center block">
+                <Link href={`/item-description/${product.id}?source=new`} className="mt-3 sm:mt-4 w-full bg-black text-white py-1.5 sm:py-2 hover:bg-gray-800 transition-colors duration-300 text-xs sm:text-sm text-center block">
                   Choose options
                 </Link>
               </div>
@@ -234,7 +234,7 @@ const ProductList: React.FC<ProductListProps> = ({
                   </div>
                   <p className="font-bold text-gray-800 mt-auto text-sm sm:text-base">{formatCurrency(product.price)}</p>
                   <p className="text-green-600 text-xs mt-1 mb-3">● In stock</p>
-                  <Link href={`/item-description/${product.id}`} className="mt-auto w-full bg-black text-white py-1.5 sm:py-2 hover:bg-gray-800 transition-colors duration-300 text-xs sm:text-sm text-center block">
+                  <Link href={`/item-description/${product.id}?source=new`} className="mt-auto w-full bg-black text-white py-1.5 sm:py-2 hover:bg-gray-800 transition-colors duration-300 text-xs sm:text-sm text-center block">
                     Choose options
                   </Link>
                 </div>

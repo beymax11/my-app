@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import Link from 'next/link';
+import { useFavoritesContext } from '../../context/FavoritesContext';
 
 interface User {
   firstName: string;
@@ -16,11 +17,7 @@ interface FavoritesDropdownProps {
 export default function FavoritesDropdown({ user, onOpenAuthModal }: FavoritesDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  const favorites = [
-    { id: 1, name: 'Chandelier 001', link: '/item-description', image: '/chandelier.avif' },
-    { id: 2, name: 'Pendant Light', link: '/item-description', image: '/pendant.avif' },
-  ];
+  const { favorites, removeFavorite } = useFavoritesContext();
 
   useEffect(() => {
     if (!isOpen) return;
@@ -76,7 +73,7 @@ export default function FavoritesDropdown({ user, onOpenAuthModal }: FavoritesDr
                 <div className="divide-y divide-gray-50">
                   {favorites.map((item) => (
                     <div
-                      key={item.id}
+                      key={item.productId}
                       className="px-5 py-4 hover:bg-gray-50 transition-all duration-200 group"
                     >
                       <div className="flex items-start gap-4">
@@ -91,7 +88,7 @@ export default function FavoritesDropdown({ user, onOpenAuthModal }: FavoritesDr
                         </div>
                         <div className="flex-1 min-w-0">
                           <Link
-                            href={item.link}
+                            href={`/item-description/${item.productId}`}
                             className="text-sm text-gray-800 font-medium hover:text-orange-500 transition-colors duration-200 block"
                           >
                             {item.name}
@@ -101,7 +98,7 @@ export default function FavoritesDropdown({ user, onOpenAuthModal }: FavoritesDr
                               <Icon icon="mdi:lightbulb-outline" className="w-3.5 h-3.5" />
                               Lighting Fixture
                             </p>
-                            <button className="text-orange-500 hover:text-orange-600 transition-colors duration-200">
+                            <button onClick={() => removeFavorite(item.productId)} className="text-orange-500 hover:text-orange-600 transition-colors duration-200">
                               <Icon icon="mdi:heart" className="w-4 h-4" />
                             </button>
                           </div>

@@ -234,7 +234,7 @@ function capitalize(str: string) {
                               className="font-medium text-sm text-gray-500 leading-none"
                               style={{ fontFamily: "'Poppins', sans-serif", fontWeight: "200" }}
                             >
-                              Hello, {user ? `${capitalize(user.firstName)}` : 'Guest'}
+                              Hello, {user ? `${capitalize((user.firstName || '').split(' ')[0])}` : 'Guest'}
                             </span>
                             <div className="flex items-center text-black">
                               <span
@@ -305,6 +305,7 @@ function capitalize(str: string) {
                         }}
                         className="text-black hover:text-orange-500 transition-colors duration-200"
                         aria-label="Favorites"
+                        id="favorites-icon"
                       >
                         <Icon icon="mdi:heart-outline" width="28" height="28" />
                       </button>
@@ -535,7 +536,7 @@ function capitalize(str: string) {
                     {user ? (
                       <div className="space-y-2">
                         <div className="px-4 py-2 text-sm text-gray-600">
-                          Hello, {user ? `${capitalize(user.firstName)}` : 'Guest'}
+                          Hello, {user ? `${capitalize((user.firstName || '').split(' ')[0])}` : 'Guest'}
                         </div>
                         <button
                           onClick={() => {
@@ -725,7 +726,7 @@ function capitalize(str: string) {
                         <div className="flex items-center justify-between">
                           <div>
                             <p className="text-sm font-medium">Free Installation on Orders Above ₱10,000</p>
-                            <p className="text-xs text-gray-500">Within Metro Manila Area</p>
+                            <p className="text-xs text-gray-500">Within San Pablo City Area</p>
                           </div>
                           <Link 
                             href="/sales" 

@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import Link from 'next/link';
+import RequireAuth from '../../components/common/RequireAuth';
 
 const BankandCard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('Banks & Cards');
@@ -38,6 +39,7 @@ const BankandCard: React.FC = () => {
   const paymentTabs = ['Banks & Cards', 'E-Wallet'];
  
   return (
+    <RequireAuth>
     <div className="flex flex-col min-h-screen bg-gray-50 font-sans">
       {/* Mobile: My Account Plain Text with Dropdown Icon as Modal Trigger */}
       <div className="lg:hidden bg-white px-4 pt-4">
@@ -187,6 +189,7 @@ const BankandCard: React.FC = () => {
         </div>
       </main>
     </div>
+    </RequireAuth>
   );
 };
 

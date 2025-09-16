@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import Link from 'next/link';
+import RequireAuth from '../../components/common/RequireAuth';
 
 interface Address {
   id: string;
@@ -137,7 +138,8 @@ const MyPurchase: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-white text-white font-sans">
+    <RequireAuth>
+    <div className="flex flex-col min-h-screen bg-white text.white font-sans">
       {/* Mobile: My Account Plain Text with Dropdown Icon as Modal Trigger */}
       <div className="lg:hidden bg-white px-4 pt-4">
         <div
@@ -347,6 +349,7 @@ const MyPurchase: React.FC = () => {
         </div>
       </main>
     </div>
+    </RequireAuth>
   );
 };
 

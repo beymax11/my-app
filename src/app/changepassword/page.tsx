@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import Link from 'next/link';
+import RequireAuth from '../../components/common/RequireAuth';
 
 const ChangePass: React.FC = () => {
   const [userData, setUserData] = useState({
@@ -34,6 +35,7 @@ const ChangePass: React.FC = () => {
   }, []);
 
   return (
+    <RequireAuth>
     <div className="flex flex-col min-h-screen bg-white text-white font-sans">
       {/* Mobile: My Account Plain Text with Dropdown Icon as Modal Trigger */}
       <div className="lg:hidden bg-white px-4 pt-4">
@@ -178,6 +180,7 @@ const ChangePass: React.FC = () => {
 
     
     </div>
+    </RequireAuth>
   );
 };
 
