@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Icon } from '@iconify/react';
 import Link from 'next/link';
-import RequireAuth from '../../components/common/RequireAuth';
+import RequireAuth from '../../common/RequireAuth';
 
 const MyProfile: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
