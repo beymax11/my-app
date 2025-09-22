@@ -1,23 +1,10 @@
 "use client";
 
-import { useState } from 'react';
+import Terms from '@/components/pages/terms/page';
 
-const Term = () => {
-    const [email, setEmail] = useState('');
-  
-      
-    const handleSubscribe = (e: React.FormEvent) => {
-        e.preventDefault();
-        // Handle subscription logic here
-        alert(`Thank you for subscribing with ${email}!`);
-        setEmail('');
-    };
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center">
-        <main className="flex-grow bg-white w-full">
-          <div className="max-w-4xl mx-auto px-4 sm:px-8 md:px-12 py-12 text-center">
-            <h1 className="text-3xl font-bold text-gray-900 mb-8">TERMS & CONDITIONS</h1>
-            <section className="prose prose-gray max-w-none text-gray-800 text-left">
+export default function Page() {
+  return <Terms />;
+}
               <p className="mb-4">This website is operated by Izaj. Throughout the site, the terms "we", "us" and "our" refer to Izaj. Izaj offers this website, including all information, tools and services available from this site to you, the user, conditioned upon your acceptance of all terms, conditions, policies and notices stated here.</p>
 
               <p className="mb-4">By visiting our site and/ or purchasing something from us, you engage in our "Service" and agree to be bound by the following terms and conditions ("Terms of Service", "Terms"), including those additional terms and conditions and policies referenced herein and/or available by hyperlink. These Terms of Service apply  to all users of the site, including without limitation users who are browsers, vendors, customers, merchants, and/ or contributors of content.</p>

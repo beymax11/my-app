@@ -1,23 +1,10 @@
 "use client";
 
-import { useState } from 'react';
+import TermsOfPurchase from '@/components/pages/termofpurchase/page';
 
-const TermsOfPurchase = () => {
-    const [email, setEmail] = useState('');
-  
-      
-    const handleSubscribe = (e: React.FormEvent) => {
-        e.preventDefault();
-        // Handle subscription logic here
-        alert(`Thank you for subscribing with ${email}!`);
-        setEmail('');
-    };
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center">
-        <main className="flex-grow bg-white w-full">
-          <div className="max-w-4xl mx-auto px-4 sm:px-8 md:px-12 py-12 text-center">
-            <h1 className="text-3xl font-bold text-gray-900 mb-8">Terms of Purchase</h1>
-            <section className="prose prose-gray max-w-none text-gray-800 text-left">
+export default function Page() {
+  return <TermsOfPurchase />;
+}
               <h2 className="text-2xl font-bold mt-12 mb-6">General</h2>
               <ol className="list-decimal pl-6">
                 <li>When you purchase any product (the "Product(s)") and/or handling, delivery, assembly and/or any other services (the "Service(s)") from Izaj (Philippines) Limited ("us", "we", "our") on <a href="http://www.izaj.com/ph/en/" target="_blank" rel="noopener noreferrer">www.izaj.com/ph/en/</a> (the "Website"), you conclude a legally binding agreement with us based on these Terms of Purchase. Each order under which you purchase Product(s) and/or Service(s) shall be referred to as an "Order".</li>

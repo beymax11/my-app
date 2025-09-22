@@ -55,10 +55,11 @@ const mockProducts = [
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const product = mockProducts.find(p => p.id === params.id);
+    const { id } = await context.params;
+    const product = mockProducts.find(p => p.id === id);
 
     if (!product) {
       return NextResponse.json(
@@ -81,11 +82,12 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const body = await request.json();
-    const productIndex = mockProducts.findIndex(p => p.id === params.id);
+    const { id } = await context.params;
+    const productIndex = mockProducts.findIndex(p => p.id === id);
 
     if (productIndex === -1) {
       return NextResponse.json(
@@ -116,10 +118,11 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const productIndex = mockProducts.findIndex(p => p.id === params.id);
+    const { id } = await context.params;
+    const productIndex = mockProducts.findIndex(p => p.id === id);
 
     if (productIndex === -1) {
       return NextResponse.json(
