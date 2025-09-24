@@ -6,10 +6,11 @@ import { User } from '../types';
 interface UserContextType {
   user: User | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (identifier: string, password: string) => Promise<void>;
   logout: () => void;
   register: (userData: RegisterData) => Promise<void>;
   updateProfile: (userData: Partial<User>) => Promise<void>;
+  loginWithProvider: (provider: 'google') => Promise<void>;
 }
 
 interface RegisterData {
@@ -32,60 +33,68 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
   // Check for existing session on mount
   useEffect(() => {
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
+    const hydrate = async () => {
       try {
-        setUser(JSON.parse(savedUser));
-      } catch (error) {
-        console.error('Error parsing user from localStorage:', error);
-        localStorage.removeItem('user');
-      }
-    }
-  }, []);
+        const res = await fetch('/api/auth/me', { cache: 'no-store' });
+        const { user: supabaseUser } = await res.json();
+        if (!supabaseUser) return;
 
-  const login = async (email: string, password: string) => {
-    setIsLoading(true);
-    try {
-      // Check if user exists in localStorage (from registration)
-      const existingUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-      const foundUser = existingUsers.find((user: any) => user.email === email);
-      
-      if (foundUser) {
-        // Use the actual registered user data
+        const name: string = (supabaseUser.user_metadata?.name as string) || '';
+        const [firstName, ...rest] = name.trim().split(' ');
+        const lastName = rest.join(' ');
+        const phone: string = (supabaseUser.user_metadata?.phone as string) || '';
+
         const userData: User = {
-          id: foundUser.id,
-          email: foundUser.email,
-          firstName: foundUser.firstName,
-          lastName: foundUser.lastName,
-          phone: foundUser.phone,
+          id: supabaseUser.id,
+          email: supabaseUser.email,
+          firstName: firstName || '',
+          lastName: lastName || '',
+          phone,
           role: 'customer',
-          isEmailVerified: true,
-          createdAt: foundUser.createdAt ? new Date(foundUser.createdAt) : new Date(),
+          isEmailVerified: Boolean(supabaseUser.email_confirmed_at),
+          createdAt: new Date(supabaseUser.created_at || Date.now()),
           updatedAt: new Date(),
         };
-
         setUser(userData);
         localStorage.setItem('user', JSON.stringify(userData));
-      } else {
-        // Fallback to derived data from email if user not found (for demo purposes)
-        const emailUsername = (email || '').split('@')[0] || '';
-        const normalizedName = emailUsername.replace(/[._-]+/g, ' ').trim();
+      } catch {}
+    };
+    hydrate();
+  }, []);
 
-        const mockUser: User = {
-          id: '1',
-          email,
-          firstName: normalizedName || 'User',
-          lastName: '',
-          phone: '+63 912 345 6789',
-          role: 'customer',
-          isEmailVerified: true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        };
-
-        setUser(mockUser);
-        localStorage.setItem('user', JSON.stringify(mockUser));
+  const login = async (identifier: string, password: string) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identifier, password })
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result?.error || 'Login failed');
       }
+
+      const supabaseUser = result.user || {};
+      const name: string = (supabaseUser.user_metadata?.name as string) || '';
+      const [firstName, ...rest] = name.trim().split(' ');
+      const lastName = rest.join(' ');
+      const phone: string = (supabaseUser.user_metadata?.phone as string) || '';
+
+      const userData: User = {
+        id: supabaseUser.id || 'unknown',
+        email: supabaseUser.email || identifier,
+        firstName: firstName || '',
+        lastName: lastName || '',
+        phone,
+        role: 'customer',
+        isEmailVerified: Boolean(supabaseUser.email_confirmed_at),
+        createdAt: new Date(supabaseUser.created_at || Date.now()),
+        updatedAt: new Date(),
+      };
+
+      setUser(userData);
+      localStorage.setItem('user', JSON.stringify(userData));
     } catch (error) {
       console.error('Login error:', error);
       throw error;
@@ -94,7 +103,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try { await fetch('/api/auth/logout', { method: 'POST' }); } catch {}
     setUser(null);
     localStorage.removeItem('user');
     localStorage.removeItem('cart'); // Clear cart on logout
@@ -103,38 +113,21 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const register = async (userData: RegisterData) => {
     setIsLoading(true);
     try {
-      // This would typically be an API call
-      const newUser: User = {
-        id: Date.now().toString(),
-        email: userData.email,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        phone: userData.phone,
-        role: 'customer',
-        isEmailVerified: false,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
-      // Store registered users in a separate array for login lookup
-      const existingUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-      const userExists = existingUsers.some((user: any) => user.email === userData.email);
-      
-      if (!userExists) {
-        existingUsers.push({
-          id: newUser.id,
-          email: newUser.email,
-          firstName: newUser.firstName,
-          lastName: newUser.lastName,
-          phone: newUser.phone,
-          password: userData.password, // Store password for demo (in real app, this would be hashed)
-          createdAt: newUser.createdAt.toISOString(),
-        });
-        localStorage.setItem('registeredUsers', JSON.stringify(existingUsers));
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: userData.email,
+          password: userData.password,
+          name: `${userData.firstName} ${userData.lastName}`.trim(),
+          phone: userData.phone,
+        }),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result?.error || 'Signup failed');
       }
-
-      setUser(newUser);
-      localStorage.setItem('user', JSON.stringify(newUser));
+      // Do not auto-login after signup; user should login explicitly.
     } catch (error) {
       console.error('Registration error:', error);
       throw error;
@@ -159,6 +152,11 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     }
   };
 
+  const loginWithProvider = async (provider: 'google') => {
+    // Redirect to our OAuth route; session will be set by Supabase cookies
+    window.location.href = `/api/auth/oauth?provider=${provider}`;
+  };
+
   return (
     <UserContext.Provider value={{
       user,
@@ -167,6 +165,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       logout,
       register,
       updateProfile,
+      loginWithProvider,
     }}>
       {children}
     </UserContext.Provider>

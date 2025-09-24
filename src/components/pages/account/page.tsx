@@ -22,44 +22,55 @@ const MyProfile: React.FC = () => {
   });
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
 
-  // Load user data on component mount
+  // Load user data on component mount and hydrate from server
   useEffect(() => {
-    console.log('Loading user data from storage...');
-    const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
-    const storedProfileImage = localStorage.getItem('profileImage');
-    
-    console.log('Stored user data:', storedUser);
-    
-    if (storedUser) {
-      try {
-        const userData = JSON.parse(storedUser);
-        console.log('Parsed user data:', userData);
-        
-        // Set the form data with the stored values
-        setFormData({
-          firstName: userData.firstName || '',
-          lastName: userData.lastName || '',
-          email: userData.email || '',
-          phone: userData.phone || ''
-        });
-
-        // Set profile image if exists
-        if (storedProfileImage) {
-          setProfileImage(storedProfileImage);
-        }
-      } catch (error) {
-        console.error('Error parsing stored user data:', error);
+    const hydrate = async () => {
+      const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
+      const storedProfileImage = localStorage.getItem('profileImage');
+      if (storedUser) {
+        try {
+          const userData = JSON.parse(storedUser);
+          setFormData({
+            firstName: userData.firstName || '',
+            lastName: userData.lastName || '',
+            email: userData.email || '',
+            phone: userData.phone || ''
+          });
+          if (storedProfileImage) setProfileImage(storedProfileImage);
+        } catch {}
+      } else {
+        window.location.href = '/';
+        return;
       }
-    } else {
-      console.log('No user data found in storage');
-      // Redirect to login if no user data found
-      window.location.href = '/';
-    }
+      try {
+        const res = await fetch('/api/auth/me', { cache: 'no-store' });
+        const data = await res.json();
+        const name = (data?.user?.user_metadata?.name || '').toString();
+        const [firstName, ...rest] = name.trim().split(' ');
+        const lastName = rest.join(' ');
+        const phone = (data?.user?.user_metadata?.phone || '').toString();
+        setFormData(prev => ({
+          ...prev,
+          firstName: firstName || prev.firstName,
+          lastName: lastName || prev.lastName,
+          phone: phone || prev.phone,
+        }));
+        const merged = {
+          ...(storedUser ? JSON.parse(storedUser) : {}),
+          firstName: firstName || undefined,
+          lastName: lastName || undefined,
+          phone: phone || undefined,
+        };
+        localStorage.setItem('user', JSON.stringify(merged));
+        sessionStorage.setItem('user', JSON.stringify(merged));
+      } catch {}
+    };
+    hydrate();
   }, []);
 
   const validatePhone = (phone: string) => {
-    const phoneRegex = /^[0-9]{11}$/;
-    return phoneRegex.test(phone);
+    const digits = (phone || '').replace(/\D/g, '');
+    return /^(\d{11}|63\d{10})$/.test(digits);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -89,28 +100,40 @@ const MyProfile: React.FC = () => {
     }
 
     try {
-      // Update user data in storage
-      const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
-      if (storedUser) {
-        const userData = JSON.parse(storedUser);
-        const updatedUser = {
-          ...userData,
+      const res = await fetch('/api/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           firstName: formData.firstName,
           lastName: formData.lastName,
-          email: formData.email,
-          phone: formData.phone
-        };
-
-        // Update in both storages to ensure data persistence
-        localStorage.setItem('user', JSON.stringify(updatedUser));
-        sessionStorage.setItem('user', JSON.stringify(updatedUser));
+          phone: formData.phone,
+        }),
+      });
+      const result = await res.json();
+      if (!res.ok) {
+        const msg = result?.error || 'Failed to update profile';
+        setErrors(prev => ({ ...prev, phone: msg.includes('Phone') ? msg : prev.phone }));
+        throw new Error(msg);
       }
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Persist updated data locally for immediate UI reflect
+      const updatedUserLocal = {
+        id: result.user?.id || '',
+        email: result.user?.email || formData.email,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        phone: formData.phone,
+      } as any;
+      const existing = localStorage.getItem('user') || sessionStorage.getItem('user');
+      if (existing) {
+        const prev = JSON.parse(existing);
+        const merged = { ...prev, ...updatedUserLocal };
+        localStorage.setItem('user', JSON.stringify(merged));
+        sessionStorage.setItem('user', JSON.stringify(merged));
+      }
+
       setIsLoading(false);
       setIsEditMode(false);
-      // Show success message here
     } catch (error) {
       console.error('Error updating profile:', error);
       setIsLoading(false);

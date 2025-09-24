@@ -48,7 +48,7 @@ export default function CartPage() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-white">
       
       <div className="max-w-[94%] mx-auto mt-8 px-5 sm:px-8 ml-6 mr-6">
         <div className="flex items-center justify-between mb-8">

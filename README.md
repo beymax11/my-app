@@ -93,13 +93,20 @@ src/
 
 3. **Set up environment variables**
    ```bash
-   cp .env.example .env.local
+   # On Windows PowerShell
+   Copy-Item env.example .env.local
+
+   # macOS/Linux
+   cp env.example .env.local
    ```
    
    Update the environment variables in `.env.local`:
    ```env
-   NEXT_PUBLIC_API_URL=http://localhost:3000/api
    NEXT_PUBLIC_APP_URL=http://localhost:3000
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+   # optional, server only
+   SUPABASE_SERVICE_ROLE_KEY=
    ```
 
 4. **Run the development server**
@@ -140,10 +147,11 @@ Edit `src/lib/constants.ts` to customize:
 - Payment methods
 
 ### API Configuration
-The app includes mock API endpoints for development:
+The app includes API endpoints for development:
 - `/api/products` - Product management
 - `/api/cart` - Cart operations
-- `/api/users` - User authentication (to be implemented)
+- `/api/auth/signup` - Sign up with email/password (Supabase)
+- `/api/auth/login` - Login with email/password (Supabase)
 
 ## 🚀 Deployment
 

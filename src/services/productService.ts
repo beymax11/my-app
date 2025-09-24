@@ -80,3 +80,7 @@ export const getAllProducts = (): Product[] => {
     }
   ];
 };
+
+export const getProductById = (id: number): Product | undefined => {
+  return getAllProducts().find(product => product.id === id);
+};
