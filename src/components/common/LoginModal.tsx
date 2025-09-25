@@ -19,10 +19,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showForgot, setShowForgot] = useState(false);
-  const [forgotEmail, setForgotEmail] = useState('');
-  const [forgotLoading, setForgotLoading] = useState(false);
-  const [forgotMessage, setForgotMessage] = useState('');
   const emailInputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   
@@ -37,9 +33,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
         password: ''
       });
       setErrors({});
-      setShowForgot(false);
-      setForgotEmail('');
-      setForgotMessage('');
     }
   }, [isOpen]);
 
@@ -203,39 +196,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
     }
   };
 
-  const handleForgotPassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!forgotEmail.trim()) {
-      setForgotMessage('Please enter your email or phone number');
-      return;
-    }
-
-    setForgotLoading(true);
-    setForgotMessage('');
-    
-    try {
-      const response = await fetch('/api/auth/forgot-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identifier: forgotEmail.trim() })
-      });
-      
-      const result = await response.json();
-      
-      if (response.ok) {
-        setForgotMessage(result.message || 'Password reset link sent!');
-        setForgotEmail('');
-      } else {
-        setForgotMessage(result.error || 'Failed to send reset link');
-      }
-    } catch (error) {
-      console.error('Forgot password error:', error);
-      setForgotMessage('Failed to send reset link. Please try again.');
-    } finally {
-      setForgotLoading(false);
-    }
-  };
 
   
 
@@ -258,7 +218,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: 400, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="relative w-[400px] sm:w-[480px] md:w-[520px] lg:w-[560px] bg-white h-screen shadow-xl rounded-none overflow-y-auto"
+            className="relative w-[400px] sm:w-[480px] md:w-[520px] lg:w-[560px] bg-white h-screen shadow-xl rounded-lg overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close Button */}
@@ -271,7 +231,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                 Log in to your account
               </h2>
               
-              <p className="text-gray-600 text-base mb-8 leading-relaxed">
+              <p className="text-black text-base mb-8 leading-relaxed ">
                 Get a more personalized experience where you don't need to fill in your information every time.
               </p>
 
@@ -336,65 +296,17 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                 </div>
 
                 <div className="text-sm">
-                  <button type="button" onClick={() => setShowForgot(v => !v)} className="text-blue-600 hover:underline font-medium">
+                  <button 
+                    type="button" 
+                    onClick={() => {
+                      onClose();
+                      router.push('/forgot-password');
+                    }} 
+                    className="text-black hover:underline font-medium"
+                  >
                     Forgot your password?
                   </button>
                 </div>
-                {showForgot && (
-                  <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                    <h3 className="text-lg font-medium text-black mb-3">Reset your password</h3>
-                    <p className="text-sm text-gray-600 mb-4">
-                      Enter your email or phone number and we'll send you a link to reset your password.
-                    </p>
-                    
-                    <form onSubmit={handleForgotPassword} className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-black mb-2">Email or Phone</label>
-                        <input
-                          type="text"
-                          value={forgotEmail}
-                          onChange={(e) => setForgotEmail(e.target.value)}
-                          className="w-full px-4 py-3 text-base border-2 border-gray-300 bg-white text-black placeholder-gray-400 focus:ring-2 focus:ring-black focus:border-black transition-all duration-200 rounded-lg"
-                          placeholder="Enter your email or phone"
-                        />
-                      </div>
-                      
-                      {forgotMessage && (
-                        <div className={`text-sm p-3 rounded-lg ${
-                          forgotMessage.includes('sent') || forgotMessage.includes('exists') 
-                            ? 'text-green-700 bg-green-50 border border-green-200' 
-                            : 'text-red-600 bg-red-50 border border-red-200'
-                        }`}>
-                          {forgotMessage}
-                        </div>
-                      )}
-                      
-                      <div className="flex gap-3">
-                        <button
-                          type="submit"
-                          disabled={forgotLoading}
-                          className="flex-1 bg-black text-white py-3 px-4 text-sm font-medium hover:bg-gray-800 transition-all duration-300 flex items-center justify-center disabled:opacity-50 rounded-lg"
-                        >
-                          {forgotLoading ? (
-                            <>
-                              <Icon icon="mdi:loading" className="w-4 h-4 animate-spin mr-2" />
-                              <span>Sending...</span>
-                            </>
-                          ) : (
-                            <span>Send Reset Link</span>
-                          )}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setShowForgot(false)}
-                          className="px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-800 transition-colors"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                )}
 
                 <button
                   type="submit"

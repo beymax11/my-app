@@ -12,10 +12,16 @@ const SignupPage: React.FC = () => {
     firstName: '',
     lastName: '',
     phoneNumber: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    province: '',
+    city: '',
+    barangay: '',
+    address: '',
+    agreeToPrivacy: false
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [showAddressForm, setShowAddressForm] = useState(false);
   const emailInputRef = useRef<HTMLInputElement>(null);
   
   const router = useRouter();
@@ -54,6 +60,22 @@ const SignupPage: React.FC = () => {
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
+  };
+
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -136,14 +158,14 @@ const SignupPage: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
           {/* Left Section - Title */}
           <div className="space-y-8">
-            <h1 className="text-5xl font-bold text-black leading-tight">
+            <h1 className="text-4xl font-bold text-black leading-tight tracking-tight">
               Create an IZAJ account
             </h1>
             <p className="text-lg text-gray-600">
               Already have an account?{' '}
               <button
-                onClick={() => router.push('/')}
-                className="text-blue-600 hover:underline font-medium"
+                onClick={() => router.push('/login')}
+                className="text-black hover:underline font-medium"
               >
                 Log in here
               </button>
@@ -152,7 +174,7 @@ const SignupPage: React.FC = () => {
 
           {/* Right Section - Form */}
           <div className="bg-white max-w-lg">
-            <p className="text-gray-600 text-base mb-8 leading-relaxed">
+            <p className="text-black text-base mb-8 leading-relaxed font-bold">
               From your profile, you will find all information connected to your account. And it's free to join!
             </p>
 
@@ -263,6 +285,111 @@ const SignupPage: React.FC = () => {
                 {errors.confirmPassword && (
                   <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>
                 )}
+              </div>
+
+              {/* Add Home Address Section */}
+              <div 
+                className="space-y-4 p-4 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                onClick={() => setShowAddressForm(!showAddressForm)}
+              >
+                <div>
+                  <label className="block text-sm font-bold text-black">Add home address (optional)</label>
+                </div>
+                
+                <p className="text-sm text-gray-600">
+                  We'll remember your information for a quick and easy checkout experience
+                </p>
+
+                {showAddressForm && (
+                  <div 
+                    className="space-y-4 p-4 border border-gray-200 rounded-lg bg-gray-50"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {/* Province */}
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-black">Province</label>
+                      <select
+                        name="province"
+                        value={formData.province}
+                        onChange={handleSelectChange}
+                        className="w-full px-4 py-3 text-base border-2 border-gray-300 bg-white text-black focus:ring-2 focus:ring-black focus:border-black transition-all duration-200 rounded-none"
+                      >
+                        <option value="">Select Province</option>
+                        <option value="Metro Manila">Metro Manila</option>
+                        <option value="Cebu">Cebu</option>
+                        <option value="Davao">Davao</option>
+                        <option value="Laguna">Laguna</option>
+                        <option value="Cavite">Cavite</option>
+                        <option value="Rizal">Rizal</option>
+                        <option value="Bulacan">Bulacan</option>
+                        <option value="Pampanga">Pampanga</option>
+                        <option value="Batangas">Batangas</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+
+                    {/* City */}
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-black">City</label>
+                      <input
+                        type="text"
+                        name="city"
+                        value={formData.city}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-3 text-base border-2 border-gray-300 bg-white text-black placeholder-gray-400 focus:ring-2 focus:ring-black focus:border-black transition-all duration-200 rounded-none"
+                        placeholder="Enter your city"
+                      />
+                    </div>
+
+                    {/* Barangay */}
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-black">Barangay</label>
+                      <input
+                        type="text"
+                        name="barangay"
+                        value={formData.barangay}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-3 text-base border-2 border-gray-300 bg-white text-black placeholder-gray-400 focus:ring-2 focus:ring-black focus:border-black transition-all duration-200 rounded-none"
+                        placeholder="Enter your barangay"
+                      />
+                    </div>
+
+                    {/* Address */}
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-black">Address</label>
+                      <input
+                        type="text"
+                        name="address"
+                        value={formData.address}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-3 text-base border-2 border-gray-300 bg-white text-black placeholder-gray-400 focus:ring-2 focus:ring-black focus:border-black transition-all duration-200 rounded-none"
+                        placeholder="Enter your street address"
+                      />
+                    </div>
+
+                  </div>
+                )}
+              </div>
+
+              {/* Privacy Policy */}
+              <div className="flex items-start space-x-3">
+                <input
+                  type="checkbox"
+                  name="agreeToPrivacy"
+                  checked={formData.agreeToPrivacy}
+                  onChange={(e) => setFormData(prev => ({ ...prev, agreeToPrivacy: e.target.checked }))}
+                  className="mt-1 w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                />
+                <div className="text-sm text-gray-600">
+                  By creating an account, you agree to our{' '}
+                  <button
+                    type="button"
+                    onClick={() => router.push('/static/privacypolicy')}
+                    className="text-blue-600 hover:underline font-medium"
+                  >
+                    Privacy Policy
+                  </button>
+                </div>
               </div>
 
               {/* Submit Button */}
